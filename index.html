@@ -1,195 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Skillion — Where Skill Becomes Capital</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Skillion is a skill-backed financial ecosystem where gaming, trading and performance generate real capital.">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Skillion — Where Skill Becomes Capital</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
 
-    body {
-      background: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
-      color: white;
-      line-height: 1.6;
-    }
+body {
+  background: #0a0a0a;
+  color: white;
+  overflow-x: hidden;
+}
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 8%;
-    }
+.hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  position: relative;
+}
 
-    .logo {
-      font-weight: 800;
-      font-size: 22px;
-      letter-spacing: 1px;
-    }
+.glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  filter: blur(120px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
-    nav a {
-      color: #94a3b8;
-      text-decoration: none;
-      margin-left: 25px;
-      font-size: 14px;
-    }
+h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
 
-    nav a:hover {
-      color: white;
-    }
+p {
+  margin-top: 20px;
+  font-size: 1.3rem;
+  color: rgba(255,255,255,0.6);
+}
 
-    .hero {
-      text-align: center;
-      padding: 120px 10% 100px;
-    }
+.buttons {
+  margin-top: 40px;
+}
 
-    .hero h1 {
-      font-size: 56px;
-      font-weight: 800;
-      margin-bottom: 20px;
-      background: linear-gradient(90deg,#38bdf8,#a78bfa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+.btn {
+  padding: 14px 28px;
+  margin: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
 
-    .hero p {
-      font-size: 20px;
-      color: #94a3b8;
-      max-width: 700px;
-      margin: auto;
-    }
+.btn-primary {
+  background: white;
+  color: black;
+}
 
-    .btn-primary {
-      margin-top: 40px;
-      display: inline-block;
-      padding: 14px 40px;
-      background: linear-gradient(90deg,#38bdf8,#a78bfa);
-      border-radius: 30px;
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      transition: 0.3s;
-    }
+.btn-primary:hover {
+  transform: scale(1.05);
+}
 
-    .btn-primary:hover {
-      opacity: 0.85;
-    }
+.btn-secondary {
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+}
 
-    section {
-      padding: 100px 8%;
-      text-align: center;
-    }
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.1);
+}
 
-    section h2 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
+.aurion {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  padding: 15px 20px;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
 
-    section p {
-      max-width: 800px;
-      margin: auto;
-      color: #94a3b8;
-    }
+.aurion:hover {
+  background: rgba(255,255,255,0.2);
+}
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
-      gap: 30px;
-      margin-top: 60px;
-    }
-
-    .card {
-      background: #0f172a;
-      padding: 40px;
-      border-radius: 15px;
-      border: 1px solid #1e293b;
-    }
-
-    .card h3 {
-      margin-bottom: 15px;
-      font-size: 20px;
-    }
-
-    footer {
-      padding: 50px 8%;
-      text-align: center;
-      border-top: 1px solid #1e293b;
-      color: #64748b;
-      font-size: 14px;
-    }
-
-  </style>
+</style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">SKILLION</div>
-  <nav>
-    <a href="#vision">Vision</a>
-    <a href="#ecosystem">Ecosystem</a>
-    <a href="#whitepaper">Whitepaper</a>
-  </nav>
-</header>
+<div class="hero">
+  <div class="glow"></div>
 
-<section class="hero">
-  <h1>Where Skill Becomes Capital</h1>
-  <p>
-    Skillion is a decentralized performance economy where gaming, trading and real skills
-    generate measurable financial value.
-  </p>
-  <a href="#vision" class="btn-primary">Discover the Ecosystem</a>
-</section>
+  <div>
+    <h1>Turn Performance Into Capital.</h1>
+    <p>The future of skill-based finance — measured, scored, amplified.</p>
 
-<section id="vision">
-  <h2>The Vision</h2>
-  <p>
-    We are building a skill-backed financial ecosystem.
-    No speculation without performance.
-    No rewards without value.
-    Only measurable skill converted into capital.
-  </p>
-</section>
-
-<section id="ecosystem">
-  <h2>The Ecosystem</h2>
-  <div class="cards">
-    <div class="card">
-      <h3>Gaming Layer</h3>
-      <p>Gamified economy connected to competitive performance and measurable improvement.</p>
-    </div>
-    <div class="card">
-      <h3>Trading Layer</h3>
-      <p>Gamified trading simulations linked to skill scoring and performance metrics.</p>
-    </div>
-    <div class="card">
-      <h3>Capital Engine</h3>
-      <p>Liquidity pools, reward systems and performance-backed financial structures.</p>
+    <div class="buttons">
+      <a href="#" class="btn btn-primary">Get Early Access</a>
+      <a href="#" class="btn btn-secondary">Talk to Aurion</a>
     </div>
   </div>
-</section>
+</div>
 
-<section id="whitepaper">
-  <h2>Whitepaper</h2>
-  <p>
-    The full Skillion whitepaper will outline the token model,
-    liquidity mechanics, performance scoring system,
-    governance and long-term roadmap.
-  </p>
-  <a href="#" class="btn-primary">Coming Soon</a>
-</section>
-
-<footer>
-  © 2026 Skillion Finance — All rights reserved.
-</footer>
+<div class="aurion">
+  Aurion Online
+</div>
 
 </body>
 </html>
