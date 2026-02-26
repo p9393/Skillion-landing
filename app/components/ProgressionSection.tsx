@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 const tiers = [
     {
         rank: "01",
         name: "Explorer",
-        description: "Entry into the Skillion ecosystem. Behavioral baseline established. Performance data begins accumulation.",
-        requirements: ["Verified account connection", "Minimum session history", "Score baseline computed"],
+        description: "roadmap.tier_1_description",
+        requirements: ["roadmap.tier_1_requirement_1", "roadmap.tier_1_requirement_2", "roadmap.tier_1_requirement_3"],
         accent: "from-slate-400 to-slate-300",
         borderColor: "border-slate-400/20",
         glowColor: "rgba(148,163,184,0.06)",
@@ -15,8 +16,8 @@ const tiers = [
     {
         rank: "02",
         name: "Builder",
-        description: "Demonstrated consistency over time. Stability metrics above threshold. Discipline patterns confirmed.",
-        requirements: ["Consistent SDI score", "Low drawdown profile", "Behavioral stability baseline"],
+        description: "roadmap.tier_2_description",
+        requirements: ["roadmap.tier_2_requirement_1", "roadmap.tier_2_requirement_2", "roadmap.tier_2_requirement_3"],
         accent: "from-sky-400 to-indigo-400",
         borderColor: "border-sky-400/20",
         glowColor: "rgba(56,189,248,0.07)",
@@ -24,8 +25,8 @@ const tiers = [
     {
         rank: "03",
         name: "Strategist",
-        description: "Verified risk management over multiple market conditions. 3-Month sustained discipline certified.",
-        requirements: ["Advanced metric thresholds met", "Multi-session pattern confirmed", "3-Month Soulbound NFT Minted"],
+        description: "roadmap.tier_3_description",
+        requirements: ["roadmap.tier_3_requirement_1", "roadmap.tier_3_requirement_2", "roadmap.tier_3_requirement_3"],
         accent: "from-indigo-400 to-violet-400",
         borderColor: "border-indigo-400/25",
         glowColor: "rgba(99,102,241,0.08)",
@@ -33,8 +34,8 @@ const tiers = [
     {
         rank: "04",
         name: "Architect",
-        description: "Institutional-grade behavioral profile. Recognized consistency across volatility regimes. 6-Month discipline certified.",
-        requirements: ["Elite-tier statistical performance", "Long-term behavioral record", "6-Month Soulbound NFT Minted"],
+        description: "roadmap.tier_4_description",
+        requirements: ["roadmap.tier_4_requirement_1", "roadmap.tier_4_requirement_2", "roadmap.tier_4_requirement_3"],
         accent: "from-violet-400 to-fuchsia-400",
         borderColor: "border-violet-400/25",
         glowColor: "rgba(139,92,246,0.09)",
@@ -42,8 +43,8 @@ const tiers = [
     {
         rank: "05",
         name: "Elite",
-        description: "The highest measurable standard. A complete, verified reputation profile. 12-Month track record certified.",
-        requirements: ["Sustained top-tier SDI score", "Extended consistency window", "12-Month Soulbound NFT Minted"],
+        description: "roadmap.tier_5_description",
+        requirements: ["roadmap.tier_5_requirement_1", "roadmap.tier_5_requirement_2", "roadmap.tier_5_requirement_3"],
         accent: "from-fuchsia-400 to-pink-400",
         borderColor: "border-fuchsia-400/30",
         glowColor: "rgba(232,121,249,0.10)",
@@ -51,6 +52,7 @@ const tiers = [
 ];
 
 function TierCard({ tier, index, visible }: { tier: typeof tiers[0]; index: number; visible: boolean }) {
+    const { t } = useTranslation();
     return (
         <div
             className={`relative flex flex-col rounded-2xl border bg-[#06080f]/80 p-7 backdrop-blur-xl transition-all duration-700 ${tier.borderColor}`}
@@ -79,7 +81,7 @@ function TierCard({ tier, index, visible }: { tier: typeof tiers[0]; index: numb
             </div>
 
             {/* Description */}
-            <p className="mb-5 text-sm leading-relaxed text-white/50">{tier.description}</p>
+            <p className="mb-5 text-sm leading-relaxed text-white/50">{t(tier.description)}</p>
 
             {/* Requirements */}
             <div className="mt-auto space-y-2">
@@ -88,7 +90,7 @@ function TierCard({ tier, index, visible }: { tier: typeof tiers[0]; index: numb
                         <div
                             className={`mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gradient-to-br ${tier.accent}`}
                         />
-                        <span className="text-xs text-white/40 leading-snug">{r}</span>
+                        <span className="text-xs text-white/40 leading-snug">{t(r)}</span>
                     </div>
                 ))}
             </div>
@@ -97,6 +99,7 @@ function TierCard({ tier, index, visible }: { tier: typeof tiers[0]; index: numb
 }
 
 export default function ProgressionSection() {
+    const { t } = useTranslation();
     const ref = useRef<HTMLElement>(null);
     const [visible, setVisible] = useState(false);
 
@@ -117,16 +120,18 @@ export default function ProgressionSection() {
                 className="mb-5 text-center transition-all duration-700"
                 style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(20px)" }}
             >
-                <p className="text-xs uppercase tracking-[0.28em] text-white/35">Reputation Tiers</p>
-                <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl lg:text-5xl">
-                    Merit-Based{" "}
-                    <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                        Progression
+                <div className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                    {t("roadmap.section_label")}
+                </div>
+                <h2 className="text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-5xl">
+                    {t("roadmap.title_main")}
+                    <br />
+                    <span className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                        {t("roadmap.title_highlight")}
                     </span>
                 </h2>
-                <p className="mx-auto mt-4 max-w-xl text-base text-white/45 leading-relaxed">
-                    Reputation tiers are earned through measurable discipline — never purchased.
-                    The system recognizes consistency, not capital.
+                <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/50">
+                    {t("roadmap.desc")}
                 </p>
             </div>
 
@@ -138,8 +143,9 @@ export default function ProgressionSection() {
                 <div className="inline-block rounded-xl border border-white/8 bg-white/[0.02] p-4 text-xs text-white/40 max-w-2xl mx-auto">
                     <p className="font-semibold text-white/70 mb-2">Soulbound Certification (SBT)</p>
                     <p className="italic">
-                        Tiers 3, 4, and 5 issue non-transferable Soulbound NFTs on-chain. These act as immutable proofs of financial discipline.
-                        They cannot be bought or sold. They are revocable in case of fraudulent behavioral deviation.
+                        Soulbound (non-transferable) digital credential. Certifications represent verified historical discipline.
+                        They do not guarantee future performance or capital allocation.
+                        They are revocable upon verified fraud.
                     </p>
                 </div>
             </div>

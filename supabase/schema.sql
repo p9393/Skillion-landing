@@ -6,7 +6,16 @@
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT,
+  role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin')),
   is_activated BOOLEAN DEFAULT FALSE,  -- admin attiva manualmente
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Lista d'attesa (Waitlist)
+CREATE TABLE IF NOT EXISTS public.waitlist (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'invited', 'rejected')),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -78,14 +87,31 @@ ALTER TABLE public.data_sources ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.broker_statements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.trades ENABLE ROW LEVEL SECURITY;
 
--- Profiles: l'utente puo' leggere solo il proprio
+-- Profiles: l'utente puo' leggere solo il proprio, gli admin leggono tutto
 CREATE POLICY "Users can view own profile"
 ON public.profiles FOR SELECT
-USING ( auth.uid() = id );
+USING ( auth.uid() = id OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin' );
 
 CREATE POLICY "Users can update own profile"
 ON public.profiles FOR UPDATE
-USING ( auth.uid() = id );
+USING ( auth.uid() = id OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin' );
+
+-- Admins can update their role or others (Supabase dashboard will also be used initially)
+
+-- Waitlist: Solo gli admin possono leggere/modificare. Insert e' publico (o via API key).
+ALTER TABLE public.waitlist ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view waitlist"
+ON public.waitlist FOR SELECT
+USING ( (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin' );
+
+CREATE POLICY "Admins can update waitlist"
+ON public.waitlist FOR UPDATE
+USING ( (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin' );
+
+CREATE POLICY "Anyone can insert into waitlist"
+ON public.waitlist FOR INSERT
+WITH CHECK ( true );
 
 -- Data Sources: utente legge/modifica/crea i propri
 CREATE POLICY "Users can view own data sources"

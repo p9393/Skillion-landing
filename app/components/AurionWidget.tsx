@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "../i18n/LanguageContext";
 import { computeSkillionScore, Trade } from "../lib/scoreEngine";
 import { createClient } from "../../utils/supabase/client";
 
@@ -107,6 +108,7 @@ function ChatPanel({
   say: (t: string, type?: LogItem["type"]) => void;
   state: AurionState;
 }) {
+  const { t } = useTranslation();
   // ── Auth gate ──────────────────────────────────────────────────
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -119,9 +121,12 @@ function ChatPanel({
     });
   }, []);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "aurion", content: "Ciao. Sono Aurion — il tuo advisor di Skillion. Come posso aiutarti?" },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  useEffect(() => {
+    setMessages([{ role: "aurion", content: t("aurion.hello") }]);
+  }, [t]);
+
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -146,13 +151,13 @@ function ChatPanel({
       });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error ?? "Errore API");
+      if (!res.ok) throw new Error(data.error ?? t("aurion.api_err"));
 
       const reply: string = data.reply ?? "";
       setMessages(m => [...m, { role: "aurion", content: reply }]);
       say(reply.slice(0, 80) + (reply.length > 80 ? "…" : ""), "INFO");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Errore di rete.";
+      const msg = err instanceof Error ? err.message : t("aurion.net_err");
       setMessages(m => [...m, { role: "aurion", content: `⚠ ${msg}` }]);
       dispatch({ type: "ALERT", level: "mid" });
     } finally {
@@ -182,10 +187,9 @@ function ChatPanel({
         <div className="flex flex-1 flex-col items-center justify-center px-8 py-12 text-center gap-5">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-cyan-400/15 to-fuchsia-400/15 text-2xl">◈</div>
           <div>
-            <div className="text-sm font-semibold text-white/85 mb-2">Aurion è riservato ai membri Skillion</div>
+            <div className="text-sm font-semibold text-white/85 mb-2">{t("aurion.gate_title")}</div>
             <p className="text-xs leading-relaxed text-white/45">
-              La chat Aurion è accessibile esclusivamente agli utenti registrati nell&apos;ecosistema Skillion.
-              Accedi per continuare.
+              {t("aurion.gate_desc")}
             </p>
           </div>
           <div className="flex flex-col gap-2 w-full max-w-xs">
@@ -193,17 +197,17 @@ function ChatPanel({
               href="/auth/login"
               className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 px-5 py-3 text-sm font-semibold text-white text-center hover:opacity-90 transition-opacity"
             >
-              Accedi a Skillion
+              {t("aurion.login_btn")}
             </a>
             <a
               href="#waitlist"
               className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-xs text-white/55 text-center hover:bg-white/[0.07] transition-colors"
             >
-              Non sei membro? Richiedi accesso
+              {t("aurion.waitlist_btn")}
             </a>
           </div>
           <p className="text-[10px] text-white/25 italic">
-            Aurion è il layer di intelligenza analitica di Skillion — disponibile per gli utenti attivi.
+            {t("aurion.gate_disclaimer")}
           </p>
         </div>
       ) : (
@@ -213,7 +217,7 @@ function ChatPanel({
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/8">
             <div>
               <div className="text-xs tracking-[0.22em] text-white/50">AURION</div>
-              <div className="text-sm font-semibold text-white/90">Chat con Aurion</div>
+              <div className="text-sm font-semibold text-white/90">{t("aurion.chat_title")}</div>
             </div>
             <div className="flex items-center gap-2">
               <span
@@ -226,10 +230,10 @@ function ChatPanel({
                 onClick={() => {
                   setVoiceEnabled(v => !v);
                   dispatch({ type: voiceEnabled ? "VOICE_OFF" : "VOICE_ON" });
-                  say(voiceEnabled ? "Voce disattivata." : "Voce attivata.", "INFO");
+                  say(voiceEnabled ? t("aurion.voice_off") : t("aurion.voice_on"), "INFO");
                 }}
               >
-                {voiceEnabled ? "🔊 ON" : "🔇 OFF"}
+                {voiceEnabled ? t("aurion.voice_on_btn") : t("aurion.voice_off_btn")}
               </button>
             </div>
           </div>
@@ -284,7 +288,7 @@ function ChatPanel({
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={onKey}
                 disabled={thinking}
-                placeholder="Scrivi ad Aurion… (Invio per inviare)"
+                placeholder={t("aurion.chat_placeholder")}
                 className="flex-1 resize-none bg-transparent text-sm text-white/85 placeholder:text-white/30 outline-none disabled:opacity-50"
               />
               <button
@@ -292,18 +296,18 @@ function ChatPanel({
                 disabled={!input.trim() || thinking}
                 className="flex-shrink-0 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40 hover:opacity-90 transition-opacity"
               >
-                Invia
+                {t("aurion.send_btn")}
               </button>
             </div>
             <p className="mt-2 text-[10px] text-white/25 text-center">
-              Aurion è in modalità simulazione — non fornisce consigli finanziari.
+              {t("aurion.disclaimer")}
             </p>
           </div>
 
           {/* Audit log (collapsed at bottom) */}
           <details className="px-5 pb-4">
             <summary className="text-[10px] tracking-widest text-white/30 uppercase cursor-pointer select-none hover:text-white/50 transition-colors">
-              Audit log ({log.length})
+              {t("aurion.audit_log_summary")} ({log.length})
             </summary>
             <div className="mt-2 space-y-1.5 max-h-40 overflow-y-auto aurion-scroll">
               {log.map((l, i) => (
@@ -322,6 +326,7 @@ function ChatPanel({
 
 /* ─── Main Widget ─────────────────────────────────────────────────── */
 export default function AurionWidget() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [state, dispatch] = useReducer(reducer, "IDLE");
@@ -400,7 +405,7 @@ export default function AurionWidget() {
         const synth = window.speechSynthesis;
         synth.cancel();
         const u = new SpeechSynthesisUtterance(t);
-        u.lang = "it-IT"; u.rate = 0.95; u.pitch = 1.0; u.volume = 1;
+        u.lang = "en-US"; u.rate = 0.95; u.pitch = 1.0; u.volume = 1;
         synth.speak(u);
       } catch { /* ignore */ }
     }
@@ -428,7 +433,7 @@ export default function AurionWidget() {
           onMouseEnter={() => dispatch({ type: "HOVER_IMPORTANT" })}
           onMouseLeave={() => dispatch({ type: "UNHOVER" })}
           className={`group relative flex items-center gap-3 rounded-2xl border bg-black/40 px-4 py-3 backdrop-blur-xl hover:bg-black/55 transition-all shadow-lg ${stateColor}`}
-          aria-label="Apri Aurion"
+          aria-label="Open Aurion"
         >
           {/* Avatar */}
           <div className="relative h-10 w-10 flex-shrink-0">
@@ -469,7 +474,7 @@ export default function AurionWidget() {
             <button
               className="absolute top-4 right-4 z-10 rounded-full border border-white/10 bg-white/5 w-8 h-8 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
-              aria-label="Chiudi"
+              aria-label="Close"
             >
               ✕
             </button>

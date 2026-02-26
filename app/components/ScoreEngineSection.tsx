@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { BuildingIcon, ShieldCheckIcon } from "lucide-react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 const metrics = [
     { label: "Sharpe Ratio", description: "Risk-adjusted return relative to volatility", value: 78 },
@@ -14,6 +16,8 @@ const metrics = [
 
 export default function ScoreEngineSection() {
     const ref = useRef<HTMLElement>(null);
+    const { t } = useTranslation();
+    const [metricsVisible, setMetricsVisible] = useState(false);
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
@@ -34,29 +38,31 @@ export default function ScoreEngineSection() {
                     className="transition-all duration-700"
                     style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateX(-24px)" }}
                 >
-                    <p className="text-xs uppercase tracking-[0.28em] text-white/35">Score Engine</p>
-                    <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
-                        A Reputation Engine Built on{" "}
+                    <p className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
+                        {t("score_engine.section_label")}
+                    </p>
+                    <h2 className="text-4xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">
+                        {t("score_engine.title_main")}
+                        <br />
                         <span className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                            Financial Mathematics
+                            {t("score_engine.title_highlight")}
                         </span>
                     </h2>
-
-                    <p className="mt-5 text-base leading-relaxed text-white/50">
-                        Skillion&apos;s core engine evaluates performance through risk-weighted and
-                        consistency-based models validated against accepted financial methodology.
-                    </p>
-                    <p className="mt-4 text-base leading-relaxed text-white/50">
-                        The system measures long-term behavioral consistency and statistical stability
-                        — not short-term performance or speculative outcomes.
-                    </p>
+                    <div className="mx-auto mt-8 grid max-w-3xl gap-6 font-light text-white/50 md:grid-cols-2 md:text-left text-[15px] leading-relaxed">
+                        <p>
+                            {t("score_engine.desc_left")}
+                        </p>
+                        <p>
+                            {t("score_engine.desc_right")}
+                        </p>
+                    </div>
 
                     <div className="mt-8 space-y-3">
                         {[
-                            "Stability across sessions and volatility regimes",
-                            "Statistical deviation from expected patterns",
-                            "Downside volatility and risk exposure behavior",
-                            "Drawdown duration and recovery characteristics",
+                            t("score_engine.point_1"),
+                            t("score_engine.point_2"),
+                            t("score_engine.point_3"),
+                            t("score_engine.point_4"),
                         ].map((point) => (
                             <div key={point} className="flex items-start gap-3">
                                 <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-indigo-400" />
@@ -67,9 +73,9 @@ export default function ScoreEngineSection() {
 
                     {/* Institutional tagline */}
                     <div className="mt-10 rounded-2xl border border-white/8 bg-white/[0.025] px-6 py-5">
-                        <p className="text-xs uppercase tracking-widest text-white/25 mb-1">Core Principle</p>
+                        <p className="text-xs uppercase tracking-widest text-white/25 mb-1">{t("score_engine.core_principle_label")}</p>
                         <p className="text-sm text-white/60 leading-relaxed italic">
-                            "The focus is long-term consistency over short-term gains. Discipline is the only variable that matters."
+                            {t("score_engine.core_principle_text")}
                         </p>
                     </div>
                 </div>
@@ -82,11 +88,11 @@ export default function ScoreEngineSection() {
                     <div className="rounded-2xl border border-white/8 bg-[#06080f]/80 p-7 backdrop-blur-xl">
                         <div className="mb-6 flex items-center justify-between">
                             <div>
-                                <p className="text-xs uppercase tracking-widest text-white/30">SDI Framework</p>
-                                <p className="mt-0.5 text-sm font-medium text-white/70">Skillion Discipline Index</p>
+                                <p className="text-xs uppercase tracking-widest text-white/30">{t("score_engine.sdi_framework_label")}</p>
+                                <p className="mt-0.5 text-sm font-medium text-white/70">{t("score_engine.sdi_framework_title")}</p>
                             </div>
                             <div className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/40">
-                                7 Dimensions
+                                {t("score_engine.sdi_framework_dimensions")}
                             </div>
                         </div>
 
@@ -114,7 +120,11 @@ export default function ScoreEngineSection() {
                         </div>
 
                         <p className="mt-6 text-center text-[10px] text-white/20">
-                            Relative display only — not indicative of any specific user's score.
+                            {t("score_engine.disclaimer_1")}
+                        </p>
+                        <p className="mt-2 text-center text-[10px] text-white/30">
+                            {t("score_engine.disclaimer_2_line1")}<br />
+                            {t("score_engine.disclaimer_2_line2")}
                         </p>
                     </div>
                 </div>

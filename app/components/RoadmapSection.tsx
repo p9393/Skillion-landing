@@ -103,14 +103,14 @@ const years = [
         milestones: [
             {
                 n: "01",
-                title: "Utility Token (SKL) Generation",
+                title: "Utility & Governance Framework Introduction (subject to legal review)",
                 description: "Launch of the native SKL token. Designed strictly as an ecosystem utility and governance primitive, not a speculative asset.",
                 status: "Roadmap",
                 statusColor: "text-white/30 border-white/10 bg-white/[0.03]",
             },
             {
                 n: "02",
-                title: "Meritocratic Capital Program",
+                title: "Controlled Capital Framework Pilot (risk-tier gated)",
                 description: "Introduction of verified capital pools. Elite-tier traders with sustained historical discipline gain access to ecosystem capital.",
                 status: "Roadmap",
                 statusColor: "text-white/30 border-white/10 bg-white/[0.03]",

@@ -2,62 +2,23 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const steps = [
-    {
-        index: "01",
-        label: "Skill",
-        title: "Verified Performance",
-        description:
-            "Connect your trading account. Skillion imports your real history — PnL, drawdown, win rate, R/R — and verifies it. No opinions. Only data.",
-        accent: "from-indigo-400 to-blue-500",
-        accentSolid: "99,102,241",
-        border: "rgba(99,102,241,0.35)",
-        glow: "rgba(99,102,241,0.18)",
-        icon: (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-            </svg>
-        ),
-    },
-    {
-        index: "02",
-        label: "Score",
-        title: "Reputation Engine",
-        description:
-            "The Skillion Score (0–1000) quantifies your edge across five dimensions: Risk Control, Stability, Profit Quality, Drawdown Discipline, and Consistency.",
-        accent: "from-sky-400 to-cyan-400",
-        accentSolid: "14,165,233",
-        border: "rgba(14,165,233,0.35)",
-        glow: "rgba(14,165,233,0.18)",
-        icon: (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-            </svg>
-        ),
-    },
-    {
-        index: "03",
-        label: "Capital",
-        title: "Merit-Gated Access",
-        description:
-            "Your score unlocks progression: advanced tools, certified profile, public ranking, and — in future phases — capital allocation and DeFi modules.",
-        accent: "from-fuchsia-400 to-pink-500",
-        accentSolid: "236,72,153",
-        border: "rgba(236,72,153,0.35)",
-        glow: "rgba(236,72,153,0.18)",
-        icon: (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-4 0v2" /><line x1="12" y1="12" x2="12" y2="16" /><line x1="10" y1="14" x2="14" y2="14" />
-            </svg>
-        ),
-    },
-];
+import { useTranslation } from "../i18n/LanguageContext";
 
 /* ── 3D tilt card ──────────────────────────────────────────────── */
 function StepCard({
     step, visible, delay,
 }: {
-    step: typeof steps[0];
+    step: {
+        num: string;
+        label: string;
+        title: string;
+        description: string;
+        accent: string;
+        accentSolid: string;
+        border: string;
+        glow: string;
+        icon: React.ReactNode;
+    };
     visible: boolean;
     delay: number;
 }) {
@@ -159,7 +120,7 @@ function StepCard({
                             className="font-mono text-xs"
                             style={{ color: hovered ? `rgba(${step.accentSolid},0.7)` : "rgba(255,255,255,0.25)", transition: "color 0.3s" }}
                         >
-                            {step.index}
+                            {step.num}
                         </span>
                     </div>
 
@@ -212,8 +173,57 @@ function StepCard({
 
 /* ── Section ───────────────────────────────────────────────────── */
 export default function SystemSection() {
+    const { t } = useTranslation();
     const ref = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
+
+    const pillars = [
+        {
+            num: "01",
+            label: t("system.step1_label"),
+            title: t("system.step1_title"),
+            description: t("system.step1_desc"),
+            accent: "from-indigo-400 to-blue-500",
+            accentSolid: "99,102,241",
+            border: "rgba(99,102,241,0.35)",
+            glow: "rgba(99,102,241,0.18)",
+            icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+            ),
+        },
+        {
+            num: "02",
+            label: t("system.step2_label"),
+            title: t("system.step2_title"),
+            description: t("system.step2_desc"),
+            accent: "from-sky-400 to-cyan-400",
+            accentSolid: "14,165,233",
+            border: "rgba(14,165,233,0.35)",
+            glow: "rgba(14,165,233,0.18)",
+            icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                </svg>
+            ),
+        },
+        {
+            num: "03",
+            label: t("system.step3_label"),
+            title: t("system.step3_title"),
+            description: t("system.step3_desc"),
+            accent: "from-fuchsia-400 to-pink-500",
+            accentSolid: "236,72,153",
+            border: "rgba(236,72,153,0.35)",
+            glow: "rgba(236,72,153,0.18)",
+            icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-4 0v2" /><line x1="12" y1="12" x2="12" y2="16" /><line x1="10" y1="14" x2="14" y2="14" />
+                </svg>
+            ),
+        },
+    ];
 
     useEffect(() => {
         const obs = new IntersectionObserver(
@@ -236,21 +246,21 @@ export default function SystemSection() {
                     transition: "opacity 0.7s ease, transform 0.7s ease",
                 }}
             >
-                <p className="text-xs uppercase tracking-[0.28em] text-white/40">The System</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-white/40">{t("system.section_label")}</p>
                 <h2 className="mt-3 text-3xl font-semibold leading-snug text-white md:text-4xl">
-                    Three layers.{" "}
+                    {t("system.title_main")}{" "}
                     <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-fuchsia-400 bg-clip-text text-transparent">
-                        One closed loop.
+                        {t("system.title_highlight")}
                     </span>
                 </h2>
                 <p className="mt-4 text-base text-white/55 leading-relaxed">
-                    Skillion is not a trading platform. It is a reputation infrastructure — the first system where verified financial skill becomes a measurable, portable asset.
+                    {t("system.desc")}
                 </p>
             </div>
 
             {/* Cards */}
             <div className="grid gap-6 md:grid-cols-3">
-                {steps.map((step, i) => (
+                {pillars.map((step, i) => (
                     <StepCard
                         key={step.label}
                         step={step}

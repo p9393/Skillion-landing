@@ -2,27 +2,30 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const contrasts = [
-    {
-        left: { label: "Markets reward", value: "Risk." },
-        right: { label: "Skillion rewards", value: "Discipline." },
-        accent: "from-indigo-500 to-sky-500",
-    },
-    {
-        left: { label: "Performance is", value: "Self-declared." },
-        right: { label: "Skillion makes it", value: "Verified." },
-        accent: "from-sky-500 to-cyan-400",
-    },
-    {
-        left: { label: "Discipline is", value: "Invisible." },
-        right: { label: "Skillion makes it", value: "Measurable." },
-        accent: "from-cyan-400 to-fuchsia-500",
-    },
-];
+import { useTranslation } from "../i18n/LanguageContext";
 
 export default function ParadigmShiftSection() {
+    const { t } = useTranslation();
     const ref = useRef<HTMLElement>(null);
     const [visible, setVisible] = useState(false);
+
+    const contrasts = [
+        {
+            left: { label: t("paradigm.row1_left_label"), value: t("paradigm.row1_left_value") },
+            right: { label: t("paradigm.row1_right_label"), value: t("paradigm.row1_right_value") },
+            accent: "from-indigo-500 to-sky-500",
+        },
+        {
+            left: { label: t("paradigm.row2_left_label"), value: t("paradigm.row2_left_value") },
+            right: { label: t("paradigm.row2_right_label"), value: t("paradigm.row2_right_value") },
+            accent: "from-sky-500 to-cyan-400",
+        },
+        {
+            left: { label: t("paradigm.row3_left_label"), value: t("paradigm.row3_left_value") },
+            right: { label: t("paradigm.row3_right_label"), value: t("paradigm.row3_right_value") },
+            accent: "from-cyan-400 to-fuchsia-500",
+        },
+    ];
 
     useEffect(() => {
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -44,11 +47,11 @@ export default function ParadigmShiftSection() {
                 className="mb-8 text-center transition-all duration-700"
                 style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(20px)" }}
             >
-                <p className="text-xs uppercase tracking-[0.28em] text-white/35">Philosophy</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-white/35">{t("paradigm.section_label")}</p>
                 <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl lg:text-5xl">
-                    The Shift From{" "}
+                    {t("paradigm.title_main")}{" "}
                     <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-fuchsia-400 bg-clip-text text-transparent">
-                        Performance to Reputation
+                        {t("paradigm.title_highlight")}
                     </span>
                 </h2>
             </div>
@@ -107,17 +110,13 @@ export default function ParadigmShiftSection() {
                 style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(20px)" }}
             >
                 <p className="text-base leading-relaxed text-white/50">
-                    In modern trading and investing, performance is often self-declared and unverified.
-                    True financial discipline remains invisible to the system.
+                    {t("paradigm.desc1")}
                 </p>
                 <p className="text-base leading-relaxed text-white/50">
-                    Skillion introduces a measurable standard of{" "}
-                    <span className="text-white/80 font-medium">behavioral consistency</span> and{" "}
-                    <span className="text-white/80 font-medium">risk control</span> — transforming
-                    how financial reputation is built, verified, and recognized.
+                    {t("paradigm.desc2")}
                 </p>
                 <div className="pt-2 inline-block rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-sm text-white/45 italic">
-                    "Not performance as declared. Performance as proven."
+                    {t("paradigm.tagline")}
                 </div>
             </div>
         </section>

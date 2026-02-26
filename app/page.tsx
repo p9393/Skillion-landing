@@ -1,3 +1,6 @@
+﻿"use client";
+
+import { useTranslation } from "./i18n/LanguageContext";
 import Navbar from "./components/Navbar";
 import HowItWorksSection from "./components/HowItWorksSection";
 import ScoreEngineSection from "./components/ScoreEngineSection";
@@ -8,6 +11,7 @@ import Footer from "./components/Footer";
 import AurionWidget from "./components/AurionWidget";
 
 export default function Page() {
+  const { t } = useTranslation();
   return (
     <>
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
@@ -28,22 +32,26 @@ export default function Page() {
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-400/[0.06] px-4 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
                 <span className="text-xs text-indigo-300/80 tracking-[0.18em] uppercase font-medium">
-                  Reputation Infrastructure
+                  {t("landing.hero.chip")}
                 </span>
               </div>
 
               <h1 className="text-4xl font-semibold leading-[1.12] text-white md:text-5xl lg:text-[3.4rem]">
-                Where Skill<br />
+                {t("landing.hero.title1")}<br />
                 <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-fuchsia-400 bg-clip-text text-transparent">
-                  Becomes Capital.
+                  {t("landing.hero.title2")}
                 </span>
               </h1>
 
+              <p className="mt-2 text-xs text-white/35 tracking-wide font-light">
+                {t("landing.hero.subtext")}
+              </p>
+
               <p className="mt-5 border-l-2 border-indigo-400/40 pl-5 text-base leading-relaxed text-white/55 md:text-lg">
-                Prima diventi <span className="text-white/80 font-medium">misurabile</span> →
-                poi diventi <span className="text-white/80 font-medium">credibile</span> →
-                poi diventi <span className="text-white/80 font-medium">capital-ready</span>.<br />
-                La prima infrastruttura dove la disciplina è un <em className="not-italic text-white">asset verificato.</em>
+                {t("landing.hero.desc1")}<span className="text-white/80 font-medium">{t("landing.hero.desc1_hl")}</span>{t("landing.hero.desc2")}
+                <span className="text-white/80 font-medium">{t("landing.hero.desc2_hl")}</span>{t("landing.hero.desc3")}
+                <span className="text-white/80 font-medium">{t("landing.hero.desc3_hl")}</span><br />
+                {t("landing.hero.desc4")}
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
@@ -57,7 +65,7 @@ export default function Page() {
 
               <p className="mt-5 text-xs text-white/25">
                 <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-amber-400/70 align-middle" />
-                Private build phase — founding cohort opening soon.
+                {t("landing.hero.footer")}
               </p>
             </div>
 
@@ -66,17 +74,17 @@ export default function Page() {
               <div className="w-[340px] rounded-2xl border border-white/8 bg-[#06080f]/85 p-6 backdrop-blur-xl shadow-2xl">
                 <div className="flex items-start justify-between mb-5">
                   <div>
-                    <p className="text-[10px] uppercase tracking-widest text-white/30">SDI Score</p>
+                    <p className="text-[10px] uppercase tracking-widest text-white/30">{t("landing.hero.card_sdi")}</p>
                     <p className="mt-1 text-4xl font-bold text-white">741<span className="text-lg font-light text-white/25"> /1000</span></p>
                   </div>
-                  <span className="rounded-lg border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-xs font-medium text-indigo-300">Initiate</span>
+                  <span className="rounded-lg border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-xs font-medium text-indigo-300">{t("landing.hero.card_init")}</span>
                 </div>
                 {[
-                  { label: "Risk Control", v: 82 },
-                  { label: "Stability", v: 74 },
-                  { label: "Consistency", v: 78 },
-                  { label: "Drawdown Discipline", v: 61 },
-                  { label: "Behavioral Stability", v: 87 },
+                  { label: ""+t("landing.hero.card_rc")+"", v: 82 },
+                  { label: t("landing.hero.card_st"), v: 74 },
+                  { label: t("landing.hero.card_co"), v: 78 },
+                  { label: ""+t("landing.hero.card_dd")+"", v: 61 },
+                  { label: ""+t("landing.hero.card_bs")+"", v: 87 },
                 ].map((m) => (
                   <div key={m.label} className="mb-3.5">
                     <div className="mb-1 flex justify-between text-xs">
@@ -89,21 +97,21 @@ export default function Page() {
                   </div>
                 ))}
                 <div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
-                  {[{ v: "1.42", l: "Sharpe" }, { v: "61%", l: "Win Rate" }, { v: "8.2%", l: "Max DD" }].map(s => (
+                  {[{ v: "1.42", l: ""+t("landing.hero.card_sh")+"" }, { v: "61%", l: ""+t("landing.hero.card_wr")+"" }, { v: "8.2%", l: ""+t("landing.hero.card_md")+"" }].map(s => (
                     <div key={s.l} className="rounded-xl border border-white/6 bg-white/[0.02] py-2.5 text-center">
                       <div className="text-sm font-semibold text-white/80">{s.v}</div>
                       <div className="text-[10px] text-white/30">{s.l}</div>
                     </div>
                   ))}
                 </div>
-                <p className="mt-4 text-center text-[10px] text-white/20 italic">Illustrative profile — not indicative of a real user</p>
+                <p className="mt-4 text-center text-[10px] text-white/20 italic">{t("landing.hero.card_ill")}</p>
               </div>
             </div>
           </div>
 
           {/* Trust strip */}
           <div className="mt-10 flex flex-wrap justify-center gap-x-7 gap-y-2 border-t border-white/[0.05] pt-7">
-            {["🔒 Read-only only", "🔑 Non-custodial", "🛡 Encrypted", "📐 Transparent methodology", "⚖ No financial advice"].map(t => (
+            {[""+t("landing.hero.t1")+"", ""+t("landing.hero.t2")+"", ""+t("landing.hero.t3")+"", ""+t("landing.hero.t4")+"", ""+t("landing.hero.t5")+""].map(t => (
               <span key={t} className="text-xs text-white/28">{t}</span>
             ))}
           </div>
@@ -119,19 +127,19 @@ export default function Page() {
             <div className="absolute bottom-0 left-1/4 h-px w-1/2 bg-gradient-to-r from-transparent via-fuchsia-500/30 to-transparent" />
           </div>
           <div className="mx-auto max-w-6xl px-6 py-14">
-            <p className="mb-2 text-center text-xs uppercase tracking-[0.28em] text-white/30">Philosophy</p>
+            <p className="mb-2 text-center text-xs uppercase tracking-[0.28em] text-white/30">{t("landing.paradigm.label")}</p>
             <h2 className="mb-10 text-center text-2xl font-semibold text-white md:text-3xl">
-              The Shift From{" "}
+              {t("landing.paradigm.title1")}{" "}
               <span className="bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent">
-                Performance to Reputation
+                {t("landing.paradigm.title2")}
               </span>
             </h2>
 
             <div className="grid gap-4 md:grid-cols-3">
               {[
-                { left: "Markets reward risk.", right: "Skillion rewards discipline.", accent: "from-sky-400 to-indigo-400" },
-                { left: "Performance is self-declared.", right: "Skillion makes it verified.", accent: "from-indigo-400 to-violet-400" },
-                { left: "Discipline is invisible.", right: "Skillion makes it measurable.", accent: "from-violet-400 to-fuchsia-400" },
+                { left: ""+t("landing.paradigm.c1_l")+"", right: ""+t("landing.paradigm.c1_r")+"", accent: "from-sky-400 to-indigo-400" },
+                { left: ""+t("landing.paradigm.c2_l")+"", right: ""+t("landing.paradigm.c2_r")+"", accent: "from-indigo-400 to-violet-400" },
+                { left: ""+t("landing.paradigm.c3_l")+"", right: ""+t("landing.paradigm.c3_r")+"", accent: "from-violet-400 to-fuchsia-400" },
               ].map((c, i) => (
                 <div key={i} className="rounded-2xl border border-white/6 bg-black/20 p-6 backdrop-blur-sm">
                   <p className="text-sm text-white/35 line-through mb-2">{c.left}</p>
@@ -148,30 +156,30 @@ export default function Page() {
               <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-500/10 text-rose-400">✖</span>
-                  <h3 className="text-xl font-semibold text-white/90">Cos'è davvero Skillion. E cosa <span className="text-rose-400">NON</span> è.</h3>
+                  <h3 className="text-xl font-semibold text-white/90">{t("landing.paradigm.box_title")}</h3>
                 </div>
               </div>
               <p className="text-sm font-medium text-white/70 mb-4 bg-white/5 p-3 rounded-lg border border-white/10 uppercase tracking-wide text-center">
-                Skillion non è: una prop firm · un broker · un exchange · un fondo · un venditore di segnali
+                {t("landing.paradigm.box_subtitle")}
               </p>
 
               <div className="grid gap-6 sm:grid-cols-2 mt-8">
                 <div>
-                  <h4 className="mb-4 text-xs tracking-widest uppercase text-white/40 border-b border-white/10 pb-2">Prop Firm Model</h4>
+                  <h4 className="mb-4 text-xs tracking-widest uppercase text-white/40 border-b border-white/10 pb-2">{t("landing.paradigm.prop_title")}</h4>
                   <ul className="space-y-3">
-                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> Valuta su 30 giorni</li>
-                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> Ricerca di guadagni veloci</li>
-                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> Alta rotazione (churn rate)</li>
-                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> Premia la speculazione e la visibilità</li>
+                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> {t("landing.paradigm.prop_1").replace(/^[✗✓]\s*/, "")}</li>
+                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> {t("landing.paradigm.prop_2").replace(/^[✗✓]\s*/, "")}</li>
+                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> {t("landing.paradigm.prop_3").replace(/^[✗✓]\s*/, "")}</li>
+                    <li className="flex gap-3 text-sm text-white/50"><span className="text-rose-400/70 opacity-70">✗</span> {t("landing.paradigm.prop_4").replace(/^[✗✓]\s*/, "")}</li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="mb-4 text-xs tracking-widest uppercase text-white/40 border-b border-white/10 pb-2">Skillion Standard</h4>
+                  <h4 className="mb-4 text-xs tracking-widest uppercase text-white/40 border-b border-white/10 pb-2">{t("landing.paradigm.skl_title")}</h4>
                   <ul className="space-y-3">
-                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> Valuta la disciplina a lungo termine</li>
-                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> Costruisce una reputazione on-chain solida</li>
-                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> Crescita sostenibile e progressiva</li>
-                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> Premia la stabilità e la coerenza comportamentale</li>
+                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> {t("landing.paradigm.skl_1").replace(/^[✗✓]\s*/, "")}</li>
+                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> {t("landing.paradigm.skl_2").replace(/^[✗✓]\s*/, "")}</li>
+                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> {t("landing.paradigm.skl_3").replace(/^[✗✓]\s*/, "")}</li>
+                    <li className="flex gap-3 text-sm text-white/80"><span className="text-indigo-400">✓</span> {t("landing.paradigm.skl_4").replace(/^[✗✓]\s*/, "")}</li>
                   </ul>
                 </div>
               </div>
@@ -206,16 +214,16 @@ export default function Page() {
                 <div className="mb-5 flex items-center gap-4">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-cyan-400/15 to-fuchsia-400/15 text-lg text-white/60">◈</div>
                   <div>
-                    <div className="text-sm font-semibold text-white/85">Aurion</div>
-                    <div className="text-xs text-white/35">Intelligence Layer · Skillion</div>
+                    <div className="text-sm font-semibold text-white/85">{t("landing.aurion_layer.title")}</div>
+                    <div className="text-xs text-white/35">{t("landing.aurion_layer.subtitle")}</div>
                   </div>
                 </div>
                 <div className="space-y-3 divide-y divide-white/[0.04]">
                   {[
-                    { k: "Mode", v: "Behavioral Analysis" },
-                    { k: "Function", v: "Pattern Recognition" },
-                    { k: "Layer", v: "Intelligence" },
-                    { k: "Status", v: "Active" },
+                    { k: t("landing.aurion_layer.k1"), v: t("landing.aurion_layer.v1") },
+                    { k: t("landing.aurion_layer.k2"), v: t("landing.aurion_layer.v2") },
+                    { k: t("landing.aurion_layer.k3"), v: t("landing.aurion_layer.v3") },
+                    { k: t("landing.aurion_layer.k4"), v: t("landing.aurion_layer.v4") },
                   ].map(r => (
                     <div key={r.k} className="flex items-center justify-between pt-3 first:pt-0">
                       <span className="text-xs text-white/35">{r.k}</span>
@@ -225,7 +233,7 @@ export default function Page() {
                 </div>
                 <div className="mt-5 rounded-xl border border-cyan-400/10 bg-cyan-400/[0.03] p-4">
                   <p className="text-xs leading-relaxed text-white/40 italic">
-                    "Aurion surfaces verified behavioral patterns — not recommendations."
+                    {t("landing.aurion_layer.quote")}
                   </p>
                 </div>
               </div>
@@ -233,23 +241,22 @@ export default function Page() {
 
             {/* Right — copy */}
             <div className="order-1 lg:order-2">
-              <p className="text-xs uppercase tracking-[0.28em] text-white/35">Intelligence Layer</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-white/35">{t("landing.aurion_layer.label")}</p>
               <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
-                Aurion —{" "}
+                {t("landing.aurion_layer.h2_1")}{" "}
                 <span className="bg-gradient-to-r from-cyan-400 to-fuchsia-400 bg-clip-text text-transparent">
-                  The Intelligence Layer
+                  {t("landing.aurion_layer.h2_2")}
                 </span>
               </h2>
               <p className="mt-4 text-base leading-relaxed text-white/50">
-                Aurion interprets behavioral data patterns and tracks progression across the Skillion ecosystem.
-                It is the analytical intelligence layer of the platform — not a traditional assistant.
+                {t("landing.aurion_layer.desc")}
               </p>
               <div className="mt-6 space-y-3">
                 {[
-                  { t: "Performance Interpretation", d: "Translates verified metrics into comprehensible behavioral insights." },
-                  { t: "Stability Tracking", d: "Monitors consistency patterns across time and market conditions." },
-                  { t: "Progression Feedback", d: "Identifies trajectory toward the next reputation tier." },
-                  { t: "Behavioral Analytics", d: "Surfaces risk patterns, deviations, and consistency signals." },
+                  { t: ""+t("landing.aurion_layer.b1_t")+"", d: ""+t("landing.aurion_layer.b1_d")+"" },
+                  { t: ""+t("landing.aurion_layer.b2_t")+"", d: ""+t("landing.aurion_layer.b2_d")+"" },
+                  { t: ""+t("landing.aurion_layer.b3_t")+"", d: ""+t("landing.aurion_layer.b3_d")+"" },
+                  { t: ""+t("landing.aurion_layer.b4_t")+"", d: ""+t("landing.aurion_layer.b4_d")+"" },
                 ].map(item => (
                   <div key={item.t} className="flex items-start gap-3">
                     <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-fuchsia-400" />
@@ -260,6 +267,10 @@ export default function Page() {
                   </div>
                 ))}
               </div>
+
+              <p className="mt-6 text-xs text-white/30 italic leading-relaxed">
+                {t("aurion.disclaimer")}
+              </p>
             </div>
           </div>
         </section>
@@ -281,19 +292,19 @@ export default function Page() {
         ═══════════════════════════════════════════════════════════ */}
         <section id="security" className="border-y border-white/[0.05] bg-white/[0.015]">
           <div className="mx-auto max-w-6xl px-6 py-14">
-            <p className="mb-2 text-center text-xs uppercase tracking-[0.28em] text-white/30">Foundations</p>
+            <p className="mb-2 text-center text-xs uppercase tracking-[0.28em] text-white/30">{t("landing.security.label")}</p>
             <h2 className="mb-10 text-center text-2xl font-semibold text-white md:text-3xl">
-              Security, Privacy &{" "}
-              <span className="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">Methodology</span>
+              {t("landing.security.title1")}{" "}
+              <span className="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">{t("landing.security.title2")}</span>
             </h2>
             {/* 5-pillar horizontal grid */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               {[
-                { icon: "🔒", t: "Data Privacy", d: "Processed for scoring only. Never sold." },
-                { icon: "🔑", t: "Read-Only", d: "No trading or withdrawal permissions ever." },
-                { icon: "🛡", t: "Non-Custodial", d: "Skillion holds no funds or private keys." },
-                { icon: "📐", t: "Open Methodology", d: "Based on accepted financial mathematics." },
-                { icon: "⚖", t: "No Advice", d: "Reputation system only — not a financial advisor." },
+                { icon: "🔒", t: ""+t("landing.security.p1_t")+"", d: ""+t("landing.security.p1_d")+"" },
+                { icon: "🔑", t: t("landing.security.p2_t"), d: ""+t("landing.security.p2_d")+"" },
+                { icon: "🛡", t: ""+t("landing.security.p3_t")+"", d: ""+t("landing.security.p3_d")+"" },
+                { icon: "📐", t: ""+t("landing.security.p4_t")+"", d: ""+t("landing.security.p4_d")+"" },
+                { icon: "⚖", t: ""+t("landing.security.p5_t")+"", d: ""+t("landing.security.p5_d")+"" },
               ].map(p => (
                 <div key={p.t} className="rounded-2xl border border-white/8 bg-black/15 p-5 backdrop-blur-sm">
                   <div className="mb-3 text-xl">{p.icon}</div>
@@ -303,7 +314,7 @@ export default function Page() {
               ))}
             </div>
             <p className="mt-8 text-center text-xs text-white/22 leading-relaxed">
-              Skillion is not a financial institution, broker, or investment advisor. Nothing on this platform constitutes investment advice or a solicitation to trade.
+              {t("landing.security.footer")}
             </p>
           </div>
         </section>
@@ -317,20 +328,20 @@ export default function Page() {
             <div className="h-72 w-72 rounded-full bg-indigo-500/8 blur-3xl" />
           </div>
           <div className="relative">
-            <p className="mb-4 text-xs uppercase tracking-[0.28em] text-white/30">Early Access</p>
+            <p className="mb-4 text-xs uppercase tracking-[0.28em] text-white/30">{t("landing.cta.label")}</p>
             <h2 className="text-3xl font-semibold text-white md:text-4xl lg:text-5xl leading-tight">
-              The Future of Financial<br />
+              {t("landing.cta.title1")}<br />
               <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-fuchsia-400 bg-clip-text text-transparent">
                 Reputation Starts Here.
               </span>
             </h2>
             <p className="mx-auto mt-4 max-w-md text-base text-white/40 leading-relaxed">
-              Early participants will shape the first version of the reputation standard.
+              {t("landing.cta.desc")}
             </p>
             <div className="mt-8">
               <WaitlistForm />
             </div>
-            <p className="mt-5 text-xs text-white/22 italic">No spam. No financial solicitation. Early access only.</p>
+            <p className="mt-5 text-xs text-white/22 italic">{t("landing.cta.footer")}</p>
           </div>
         </section>
 

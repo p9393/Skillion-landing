@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import LanguageSelector from "./LanguageSelector";
+import { useTranslation } from "../i18n/LanguageContext";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { t } = useTranslation();
 
   const links = [
     { href: "#system", label: "The System" },
@@ -89,13 +93,16 @@ export default function Navbar() {
         ))}
       </nav>
 
-      {/* Desktop CTA */}
-      <a
-        href="#waitlist"
-        className="hidden md:inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
-      >
-        Request Invite →
-      </a>
+      {/* Desktop CTA and Language Selector */}
+      <div className="hidden md:flex items-center gap-4">
+        <LanguageSelector />
+        <a
+          href="#waitlist"
+          className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-all font-sans ring-1 ring-white/10"
+        >
+          Launch App
+        </a>
+      </div>
 
       {/* Mobile hamburger button */}
       <button

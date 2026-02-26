@@ -1,4 +1,10 @@
+"use client";
+
+import Link from "next/link";
+import { useTranslation } from "../i18n/LanguageContext";
+
 export default function Footer() {
+    const { t } = useTranslation();
     const year = new Date().getFullYear();
 
     return (
@@ -33,53 +39,56 @@ export default function Footer() {
                                 <div className="text-xs text-white/50">Finance</div>
                             </div>
                         </div>
+                        <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 w-fit">
+                            <div className="relative flex h-2 w-2">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                            </div>
+                            <span className="text-xs font-medium text-emerald-400">{t("footer.status")}</span>
+                        </div>
                         <p className="mt-4 max-w-xs text-sm text-white/45 leading-relaxed">
-                            A Reputation-Based Financial Infrastructure. Where verified skill becomes a measurable, portable financial asset.
+                            {t("footer.description")}
                         </p>
                         <p className="mt-5 text-xs text-white/30 italic">
-                            "Where Skill Becomes Capital."
+                            {t("footer.tagline")}
                         </p>
                     </div>
+                </div>
 
-                    {/* Links */}
+                {/* Links Columns */}
+                <div className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-4 px-6 md:px-12">
                     <div>
-                        <div className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">Product</div>
-                        <ul className="space-y-2.5 text-sm text-white/55">
-                            <li><a href="#system" className="hover:text-white/80 transition-colors">The System</a></li>
-                            <li><a href="#aurion" className="hover:text-white/80 transition-colors">Aurion</a></li>
-                            <li><a href="#roadmap" className="hover:text-white/80 transition-colors">Roadmap</a></li>
-                            <li><a href="#waitlist" className="hover:text-white/80 transition-colors">Early Access</a></li>
+                        <h4 className="text-sm font-semibold text-white mb-4">{t("footer.col1_title")}</h4>
+                        <ul className="space-y-3 text-sm text-white/50">
+                            <li><Link href="#how-it-works" className="hover:text-cyan-400 transition-colors">{t("footer.col1_item1")}</Link></li>
+                            <li><Link href="#score" className="hover:text-cyan-400 transition-colors">{t("footer.col1_item2")}</Link></li>
+                            <li><Link href="#aurion" className="hover:text-cyan-400 transition-colors">{t("footer.col1_item3")}</Link></li>
                         </ul>
                     </div>
-
                     <div>
-                        <div className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">Legal</div>
-                        <ul className="space-y-2.5 text-sm text-white/55">
-                            <li><a href="/privacy" className="hover:text-white/80 transition-colors">Privacy Policy</a></li>
-                            <li><a href="/terms" className="hover:text-white/80 transition-colors">Terms of Use</a></li>
-                            <li><a href="/disclaimer" className="hover:text-white/80 transition-colors">Disclaimer</a></li>
-                            <li><a href="/cookies" className="hover:text-white/80 transition-colors">Cookie Policy</a></li>
+                        <h4 className="text-sm font-semibold text-white mb-4">{t("footer.col2_title")}</h4>
+                        <ul className="space-y-3 text-sm text-white/50">
+                            <li><Link href="/terms" className="hover:text-cyan-400 transition-colors">{t("footer.col2_item1")}</Link></li>
+                            <li><Link href="/privacy" className="hover:text-cyan-400 transition-colors">{t("footer.col2_item2")}</Link></li>
+                            <li><Link href="/methodology" className="hover:text-cyan-400 transition-colors">{t("footer.col2_item3")}</Link></li>
+                            <li><Link href="/security" className="hover:text-cyan-400 transition-colors">{t("footer.col2_item4")}</Link></li>
+                            <li><a href="/whitepaper.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">{t("footer.col2_item5")}</a></li>
                         </ul>
                     </div>
-
-                    {/* Contact */}
-                    <div>
-                        <div className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">Contact</div>
+                    <div className="md:col-span-2">
+                        <h4 className="text-sm font-semibold text-white mb-4">{t("footer.contact_title")}</h4>
                         <ul className="space-y-2.5 text-sm text-white/55">
                             <li>
                                 <a
-                                    href="mailto:contact@skillion.finance"
+                                    href="mailto:info@skillion.finance"
                                     className="flex items-center gap-2 hover:text-cyan-300 transition-colors group"
                                 >
                                     <svg className="h-3.5 w-3.5 flex-shrink-0 group-hover:text-cyan-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                                         <rect x="2" y="4" width="20" height="16" rx="2" />
                                         <polyline points="2,4 12,13 22,4" />
                                     </svg>
-                                    contact@skillion.finance
+                                    info@skillion.finance
                                 </a>
-                            </li>
-                            <li className="text-xs text-white/30 leading-relaxed">
-                                For partnerships, press,<br />and general inquiries.
                             </li>
                         </ul>
                     </div>
@@ -88,8 +97,8 @@ export default function Footer() {
                 {/* Disclaimer */}
                 <div className="mt-12 rounded-2xl border border-white/8 bg-white/[0.02] p-5">
                     <p className="text-[11px] leading-relaxed text-white/30">
-                        <span className="font-semibold text-white/40">Important Notice:</span>{" "}
-                        Skillion Finance is a reputation analytics and gamification platform. It does not provide financial advice, manage client funds, or operate as a regulated financial institution. The Skillion Score is an algorithmic performance metric and does not constitute a guarantee of future results. All data shown on this platform is for informational purposes only. Users are responsible for their own trading decisions. Skillion Finance is not affiliated with any exchange, broker, or financial regulator.
+                        <span className="font-semibold text-white/40">{t("footer.disclaimer_important_notice")}:</span>{" "}
+                        {t("footer.disclaimer_text")}
                     </p>
                 </div>
 
