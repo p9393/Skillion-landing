@@ -116,6 +116,7 @@
         "feature3_desc": "Skizziert die genauen Anforderungen, um deine nächste Zertifizierungsstufe freizuschalten.",
         "disclaimer": "Aurion bietet keine Finanzberatung an oder führt keine Trades aus. Es interpretiert Verhaltenskonsistenzmuster.",
         "chat_placeholder": "Nachricht an Aurion… (Enter zum Senden)",
+        "chat_title": "Aurion Intelligence",
         "send_btn": "Senden",
         "voice_on": "Stimme aktiviert.",
         "voice_off": "Stimme deaktiviert.",
@@ -175,7 +176,12 @@
     "navbar": {
         "system": "System",
         "aurion": "Aurion",
-        "community": "Community"
+        "community": "Community",
+        "progression": "Progression",
+        "roadmap": "Roadmap",
+        "security": "Sicherheit",
+        "launch_app": "App starten",
+        "req_btn": "Einladung anfordern →"
     },
     "landing": {
         "hero": {

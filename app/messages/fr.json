@@ -116,6 +116,7 @@
         "feature3_desc": "Décrit les exigences exactes pour débloquer votre prochain niveau de certification.",
         "disclaimer": "Aurion ne fournit pas de conseils financiers ni n'exécute de transactions. Il interprète les schémas de cohérence comportementale.",
         "chat_placeholder": "Envoyer un message à Aurion… (Entrée pour envoyer)",
+        "chat_title": "Aurion Intelligence",
         "send_btn": "Envoyer",
         "voice_on": "Voix activée.",
         "voice_off": "Voix désactivée.",
@@ -173,9 +174,14 @@
         "disclaimer_text": "Skillion Finance est une plateforme d'analyse de réputation et de ludification. Elle ne fournit pas de conseils financiers, ne gère pas les fonds des clients et n'opère pas en tant qu'institution financière réglementée. Le Score Skillion est une métrique de performance algorithmique et ne constitue pas une garantie de résultats futurs. Toutes les données présentées sur cette plateforme sont uniquement à des fins d'information. Les utilisateurs sont responsables de leurs propres décisions de trading. Skillion Finance n'est affiliée à aucune bourse, courtier ou régulateur financier."
     },
     "navbar": {
-        "system": "Système",
+        "system": "Le Système",
         "aurion": "Aurion",
-        "community": "Communauté"
+        "community": "Communauté",
+        "progression": "Progression",
+        "roadmap": "Feuille de Route",
+        "security": "Sécurité",
+        "launch_app": "Lancer l'App",
+        "req_btn": "Demander une Invitation →"
     },
     "landing": {
         "hero": {

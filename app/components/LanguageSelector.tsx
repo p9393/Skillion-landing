@@ -8,6 +8,7 @@ const languages = [
     { code: "it", label: "Italiano" },
     { code: "es", label: "Español" },
     { code: "fr", label: "Français" },
+    { code: "de", label: "Deutsch" },
 ] as const;
 
 type LangCode = typeof languages[number]["code"];
@@ -60,8 +61,8 @@ export default function LanguageSelector() {
                                     setOpen(false);
                                 }}
                                 className={`flex items-center justify-between rounded-md px-3 py-2 text-xs transition-colors ${lang === l.code
-                                        ? "bg-white/10 text-white font-semibold"
-                                        : "text-white/60 hover:bg-white/5 hover:text-white/90"
+                                    ? "bg-white/10 text-white font-semibold"
+                                    : "text-white/60 hover:bg-white/5 hover:text-white/90"
                                     }`}
                             >
                                 <span>{l.label}</span>

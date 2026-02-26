@@ -10,11 +10,11 @@ export default function Navbar() {
   const { t } = useTranslation();
 
   const links = [
-    { href: "#system", label: "The System" },
-    { href: "#aurion", label: "Aurion" },
-    { href: "#progression", label: "Progression" },
-    { href: "#roadmap", label: "Roadmap" },
-    { href: "#security", label: "Security" },
+    { href: "#system", label: t("navbar.system") },
+    { href: "#aurion", label: t("navbar.aurion") },
+    { href: "#progression", label: t("navbar.progression") },
+    { href: "#roadmap", label: t("navbar.roadmap") },
+    { href: "#security", label: t("navbar.security") },
   ];
 
   return (
@@ -100,7 +100,7 @@ export default function Navbar() {
           href="#waitlist"
           className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-all font-sans ring-1 ring-white/10"
         >
-          Launch App
+          {t("navbar.launch_app")}
         </a>
       </div>
 
@@ -143,7 +143,7 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
             className="mt-2 rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 px-4 py-3 text-sm font-semibold text-white text-center hover:opacity-90 transition-opacity"
           >
-            Request Invite →
+            {t("navbar.req_btn")}
           </a>
         </div>
       )}
