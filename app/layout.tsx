@@ -76,7 +76,7 @@ export default function RootLayout({
           html,body{background: #0e1017 !important; color-scheme:dark; min-height: 100vh;}
         `}} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* Global UI layer — mounted above all page content */}
         <Preloader />
         <CustomCursor />

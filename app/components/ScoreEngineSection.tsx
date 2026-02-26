@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { BuildingIcon, ShieldCheckIcon } from "lucide-react";
@@ -33,7 +33,7 @@ export default function ScoreEngineSection() {
     return (
         <section id="score-engine" ref={ref} className="mx-auto max-w-6xl px-6 py-14">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-start">
-                {/* Left — copy */}
+                {/* Left â€” copy */}
                 <div
                     className="transition-all duration-700"
                     style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateX(-24px)" }}
@@ -63,8 +63,8 @@ export default function ScoreEngineSection() {
                             t("score_engine.point_2"),
                             t("score_engine.point_3"),
                             t("score_engine.point_4"),
-                        ].map((point) => (
-                            <div key={point} className="flex items-start gap-3">
+                        ].map((point, i) => (
+                            <div key={i} className="flex items-start gap-3">
                                 <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-indigo-400" />
                                 <span className="text-sm text-white/50 leading-snug">{point}</span>
                             </div>
@@ -80,7 +80,7 @@ export default function ScoreEngineSection() {
                     </div>
                 </div>
 
-                {/* Right — metric bars */}
+                {/* Right â€” metric bars */}
                 <div
                     className="transition-all duration-700 delay-200"
                     style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateX(24px)" }}
@@ -132,3 +132,4 @@ export default function ScoreEngineSection() {
         </section>
     );
 }
+

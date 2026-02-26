@@ -90,7 +90,19 @@
         "cta": "Explore the Math (Whitepaper)",
         "disclaimer1": "Relative display only — not indicative of any specific user's score.",
         "disclaimer2": "Methodology overview available in the whitepaper.",
-        "disclaimer3": "Confidence weighting based on data verification grade."
+        "disclaimer3": "Confidence weighting based on data verification grade.",
+        "point_1": "Risk-adjusted scoring penalizes over-leveraged behavior regardless of outcome.",
+        "point_2": "Behavioral consistency measured across time, not single-event performance.",
+        "point_3": "Drawdown depth and recovery speed are weighted independently.",
+        "point_4": "Z-score coherence separates statistical edge from random variance.",
+        "core_principle_label": "Core Principle",
+        "core_principle_text": "A single exceptional period does not constitute verified discipline. Skillion measures sustained behavioral patterns — not peaks.",
+        "sdi_framework_label": "SDI Framework",
+        "sdi_framework_title": "Skillion Discipline Index",
+        "sdi_framework_dimensions": "7 Dimensions",
+        "disclaimer_1": "Relative display only — not indicative of any specific user's score.",
+        "disclaimer_2_line1": "Methodology overview available in the whitepaper.",
+        "disclaimer_2_line2": "Confidence weighting based on data verification grade."
     },
     "aurion": {
         "title_main": "Meet Aurion.",

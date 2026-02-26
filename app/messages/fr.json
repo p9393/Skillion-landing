@@ -90,7 +90,19 @@
         "cta": "Explorer les Mathématiques (Whitepaper)",
         "disclaimer1": "Affichage relatif uniquement — non indicatif du score d'un utilisateur spécifique.",
         "disclaimer2": "Aperçu de la méthodologie disponible dans le whitepaper.",
-        "disclaimer3": "Pondération de confiance basée sur le degré de vérification des données."
+        "disclaimer3": "Pondération de confiance basée sur le degré de vérification des données.",
+        "point_1": "La notation ajustée au risque pénalise les comportements sur-endettés indépendamment du résultat.",
+        "point_2": "La cohérence comportementale est mesurée dans le temps, pas sur des événements uniques.",
+        "point_3": "La profondeur du drawdown et la vitesse de récupération sont pondérées indépendamment.",
+        "point_4": "La cohérence Z-score sépare l'avantage statistique de la variance aléatoire.",
+        "core_principle_label": "Principe Fondamental",
+        "core_principle_text": "Une seule période exceptionnelle ne constitue pas une discipline vérifiée. Skillion mesure des schémas comportementaux durables — pas des pics.",
+        "sdi_framework_label": "Cadre SDI",
+        "sdi_framework_title": "Skillion Discipline Index",
+        "sdi_framework_dimensions": "7 Dimensions",
+        "disclaimer_1": "Affichage relatif uniquement — non indicatif du score d'un utilisateur spécifique.",
+        "disclaimer_2_line1": "Aperçu de la méthodologie disponible dans le whitepaper.",
+        "disclaimer_2_line2": "Pondération de confiance basée sur le degré de vérification des données."
     },
     "aurion": {
         "title_main": "Voici Aurion.",

@@ -90,7 +90,19 @@
         "cta": "Entdecke die Mathematik (Whitepaper)",
         "disclaimer1": "Nur relative Darstellung — kein Hinweis auf den Punktestand eines bestimmten Nutzers.",
         "disclaimer2": "Methodiküberblick im Whitepaper verfügbar.",
-        "disclaimer3": "Vertrauensgewichtung basierend auf der Datenverifizierungsstufe."
+        "disclaimer3": "Vertrauensgewichtung basierend auf der Datenverifizierungsstufe.",
+        "point_1": "Die risikoadjustierte Bewertung bestraft über-verschuldetes Verhalten unabhängig vom Ergebnis.",
+        "point_2": "Verhaltenskonsistenz wird über die Zeit gemessen, nicht bei einzelnen Ereignissen.",
+        "point_3": "Drawdown-Tiefe und Erholungsgeschwindigkeit werden unabhängig voneinander gewichtet.",
+        "point_4": "Z-Score Kohärenz trennt statistischen Vorteil von zufälliger Varianz.",
+        "core_principle_label": "Kernprinzip",
+        "core_principle_text": "Ein einziger außergewöhnlicher Zeitraum stellt keine verifizierte Disziplin dar. Skillion misst nachhaltige Verhaltensmuster — keine Höhepunkte.",
+        "sdi_framework_label": "SDI-Framework",
+        "sdi_framework_title": "Skillion Discipline Index",
+        "sdi_framework_dimensions": "7 Dimensionen",
+        "disclaimer_1": "Nur relative Darstellung — kein Hinweis auf den Punktestand eines bestimmten Nutzers.",
+        "disclaimer_2_line1": "Methodiküberblick im Whitepaper verfügbar.",
+        "disclaimer_2_line2": "Vertrauensgewichtung basierend auf der Datenverifizierungsstufe."
     },
     "aurion": {
         "title_main": "Triff Aurion.",

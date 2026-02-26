@@ -90,7 +90,19 @@
         "cta": "Esplora la Matematica (Whitepaper)",
         "disclaimer1": "Visualizzazione relativa — non indicativa del punteggio di un utente specifico.",
         "disclaimer2": "Panoramica della metodologia disponibile nel whitepaper.",
-        "disclaimer3": "Ponderazione di confidenza basata sul grado di verifica dei dati."
+        "disclaimer3": "Ponderazione di confidenza basata sul grado di verifica dei dati.",
+        "point_1": "Il punteggio risk-adjusted penalizza il comportamento over-leveraged indipendentemente dal risultato.",
+        "point_2": "La coerenza comportamentale è misurata nel tempo, non in eventi singoli.",
+        "point_3": "La profondità del drawdown e la velocità di recupero sono ponderati indipendentemente.",
+        "point_4": "La coerenza Z-score separa il vantaggio statistico dalla varianza casuale.",
+        "core_principle_label": "Principio Fondamentale",
+        "core_principle_text": "Un singolo periodo eccezionale non costituisce disciplina verificata. Skillion misura pattern comportamentali sostenuti — non picchi.",
+        "sdi_framework_label": "Framework SDI",
+        "sdi_framework_title": "Skillion Discipline Index",
+        "sdi_framework_dimensions": "7 Dimensioni",
+        "disclaimer_1": "Visualizzazione relativa — non indicativa del punteggio di un utente specifico.",
+        "disclaimer_2_line1": "Panoramica della metodologia disponibile nel whitepaper.",
+        "disclaimer_2_line2": "Ponderazione di confidenza basata sul grado di verifica dei dati."
     },
     "aurion": {
         "title_main": "Incontra Aurion.",
