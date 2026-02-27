@@ -209,11 +209,11 @@
             "card_wr": "Win Rate",
             "card_md": "Max DD",
             "card_ill": "Profilo illustrativo — non indicativo di un utente reale",
-            "t1": "🔒 Solo lettura",
-            "t2": "🔑 Non custodial",
-            "t3": "🛡️ Crittografato",
-            "t4": "📐 Metodologia trasparente",
-            "t5": "⚖️ Nessun consiglio finanziario",
+            "t1": "Solo lettura",
+            "t2": "Non custodial",
+            "t3": "Crittografato",
+            "t4": "Metodologia trasparente",
+            "t5": "Nessun consiglio finanziario",
             "subtext": "Verified financial discipline infrastructure. Non-custodial. Data-driven. Risk-aware."
         },
         "paradigm": {

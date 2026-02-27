@@ -209,11 +209,11 @@
             "card_wr": "Taux de Réussite",
             "card_md": "Max DD",
             "card_ill": "Profil illustrativo — non indicatif d'un utilisateur réel",
-            "t1": "🔒 Lecture seule uniquement",
-            "t2": "🔑 Non dépositaire",
-            "t3": "🛡 Chiffré",
-            "t4": "📐 Méthodologie transparente",
-            "t5": "⚖ Aucun conseil financier",
+            "t1": "Lecture seule",
+            "t2": "Non dépositaire",
+            "t3": "Chiffré",
+            "t4": "Méthodologie transparente",
+            "t5": "Aucun conseil financier",
             "subtext": "Verified financial discipline infrastructure. Non-custodial. Data-driven. Risk-aware."
         },
         "paradigm": {

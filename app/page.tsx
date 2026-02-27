@@ -56,10 +56,10 @@ export default function Page() {
 
               <div className="mt-7 flex flex-wrap gap-3">
                 <a href="#waitlist" className="rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 px-7 py-3.5 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition-opacity">
-                  Request Early Access
+                  {t("landing.hero.req_btn")}
                 </a>
                 <a href="#how-it-works" className="rounded-xl border border-white/12 bg-white/[0.04] px-7 py-3.5 text-sm font-medium text-white/70 hover:bg-white/[0.08] transition-colors">
-                  Explore the System →
+                  {t("landing.hero.exp_btn")}
                 </a>
               </div>
 
@@ -80,11 +80,11 @@ export default function Page() {
                   <span className="rounded-lg border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-xs font-medium text-indigo-300">{t("landing.hero.card_init")}</span>
                 </div>
                 {[
-                  { label: ""+t("landing.hero.card_rc")+"", v: 82 },
+                  { label: "" + t("landing.hero.card_rc") + "", v: 82 },
                   { label: t("landing.hero.card_st"), v: 74 },
                   { label: t("landing.hero.card_co"), v: 78 },
-                  { label: ""+t("landing.hero.card_dd")+"", v: 61 },
-                  { label: ""+t("landing.hero.card_bs")+"", v: 87 },
+                  { label: "" + t("landing.hero.card_dd") + "", v: 61 },
+                  { label: "" + t("landing.hero.card_bs") + "", v: 87 },
                 ].map((m) => (
                   <div key={m.label} className="mb-3.5">
                     <div className="mb-1 flex justify-between text-xs">
@@ -97,7 +97,7 @@ export default function Page() {
                   </div>
                 ))}
                 <div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
-                  {[{ v: "1.42", l: ""+t("landing.hero.card_sh")+"" }, { v: "61%", l: ""+t("landing.hero.card_wr")+"" }, { v: "8.2%", l: ""+t("landing.hero.card_md")+"" }].map(s => (
+                  {[{ v: "1.42", l: "" + t("landing.hero.card_sh") + "" }, { v: "61%", l: "" + t("landing.hero.card_wr") + "" }, { v: "8.2%", l: "" + t("landing.hero.card_md") + "" }].map(s => (
                     <div key={s.l} className="rounded-xl border border-white/6 bg-white/[0.02] py-2.5 text-center">
                       <div className="text-sm font-semibold text-white/80">{s.v}</div>
                       <div className="text-[10px] text-white/30">{s.l}</div>
@@ -109,10 +109,16 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Trust strip */}
+          {/* Trust strip — emoji hardcoded in JSX to avoid JSON encoding issues */}
           <div className="mt-10 flex flex-wrap justify-center gap-x-7 gap-y-2 border-t border-white/[0.05] pt-7">
-            {[""+t("landing.hero.t1")+"", ""+t("landing.hero.t2")+"", ""+t("landing.hero.t3")+"", ""+t("landing.hero.t4")+"", ""+t("landing.hero.t5")+""].map(t => (
-              <span key={t} className="text-xs text-white/28">{t}</span>
+            {[
+              { icon: "🔒", label: t("landing.hero.t1") },
+              { icon: "🔑", label: t("landing.hero.t2") },
+              { icon: "🛡️", label: t("landing.hero.t3") },
+              { icon: "📐", label: t("landing.hero.t4") },
+              { icon: "⚖️", label: t("landing.hero.t5") },
+            ].map(({ icon, label }) => (
+              <span key={label} className="text-xs text-white/28">{icon} {label}</span>
             ))}
           </div>
         </section>
@@ -137,9 +143,9 @@ export default function Page() {
 
             <div className="grid gap-4 md:grid-cols-3">
               {[
-                { left: ""+t("landing.paradigm.c1_l")+"", right: ""+t("landing.paradigm.c1_r")+"", accent: "from-sky-400 to-indigo-400" },
-                { left: ""+t("landing.paradigm.c2_l")+"", right: ""+t("landing.paradigm.c2_r")+"", accent: "from-indigo-400 to-violet-400" },
-                { left: ""+t("landing.paradigm.c3_l")+"", right: ""+t("landing.paradigm.c3_r")+"", accent: "from-violet-400 to-fuchsia-400" },
+                { left: "" + t("landing.paradigm.c1_l") + "", right: "" + t("landing.paradigm.c1_r") + "", accent: "from-sky-400 to-indigo-400" },
+                { left: "" + t("landing.paradigm.c2_l") + "", right: "" + t("landing.paradigm.c2_r") + "", accent: "from-indigo-400 to-violet-400" },
+                { left: "" + t("landing.paradigm.c3_l") + "", right: "" + t("landing.paradigm.c3_r") + "", accent: "from-violet-400 to-fuchsia-400" },
               ].map((c, i) => (
                 <div key={i} className="rounded-2xl border border-white/6 bg-black/20 p-6 backdrop-blur-sm">
                   <p className="text-sm text-white/35 line-through mb-2">{c.left}</p>
@@ -149,8 +155,7 @@ export default function Page() {
             </div>
 
             <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-white/40">
-              In modern trading and investing, performance is often self-declared and unverified. True financial discipline remains invisible.
-              Skillion introduces a measurable standard of <span className="text-white/65">behavioral consistency</span> and <span className="text-white/65">risk control</span>.
+              {t("landing.paradigm.desc")}
             </p>
             <div className="mx-auto mt-16 max-w-4xl rounded-2xl border border-rose-500/10 bg-rose-500/[0.02] p-8 backdrop-blur-sm sm:p-10">
               <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -253,10 +258,10 @@ export default function Page() {
               </p>
               <div className="mt-6 space-y-3">
                 {[
-                  { t: ""+t("landing.aurion_layer.b1_t")+"", d: ""+t("landing.aurion_layer.b1_d")+"" },
-                  { t: ""+t("landing.aurion_layer.b2_t")+"", d: ""+t("landing.aurion_layer.b2_d")+"" },
-                  { t: ""+t("landing.aurion_layer.b3_t")+"", d: ""+t("landing.aurion_layer.b3_d")+"" },
-                  { t: ""+t("landing.aurion_layer.b4_t")+"", d: ""+t("landing.aurion_layer.b4_d")+"" },
+                  { t: "" + t("landing.aurion_layer.b1_t") + "", d: "" + t("landing.aurion_layer.b1_d") + "" },
+                  { t: "" + t("landing.aurion_layer.b2_t") + "", d: "" + t("landing.aurion_layer.b2_d") + "" },
+                  { t: "" + t("landing.aurion_layer.b3_t") + "", d: "" + t("landing.aurion_layer.b3_d") + "" },
+                  { t: "" + t("landing.aurion_layer.b4_t") + "", d: "" + t("landing.aurion_layer.b4_d") + "" },
                 ].map(item => (
                   <div key={item.t} className="flex items-start gap-3">
                     <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-fuchsia-400" />
@@ -300,11 +305,11 @@ export default function Page() {
             {/* 5-pillar horizontal grid */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               {[
-                { icon: "🔒", t: ""+t("landing.security.p1_t")+"", d: ""+t("landing.security.p1_d")+"" },
-                { icon: "🔑", t: t("landing.security.p2_t"), d: ""+t("landing.security.p2_d")+"" },
-                { icon: "🛡", t: ""+t("landing.security.p3_t")+"", d: ""+t("landing.security.p3_d")+"" },
-                { icon: "📐", t: ""+t("landing.security.p4_t")+"", d: ""+t("landing.security.p4_d")+"" },
-                { icon: "⚖", t: ""+t("landing.security.p5_t")+"", d: ""+t("landing.security.p5_d")+"" },
+                { icon: "🔒", t: "" + t("landing.security.p1_t") + "", d: "" + t("landing.security.p1_d") + "" },
+                { icon: "🔑", t: t("landing.security.p2_t"), d: "" + t("landing.security.p2_d") + "" },
+                { icon: "🛡", t: "" + t("landing.security.p3_t") + "", d: "" + t("landing.security.p3_d") + "" },
+                { icon: "📐", t: "" + t("landing.security.p4_t") + "", d: "" + t("landing.security.p4_d") + "" },
+                { icon: "⚖", t: "" + t("landing.security.p5_t") + "", d: "" + t("landing.security.p5_d") + "" },
               ].map(p => (
                 <div key={p.t} className="rounded-2xl border border-white/8 bg-black/15 p-5 backdrop-blur-sm">
                   <div className="mb-3 text-xl">{p.icon}</div>

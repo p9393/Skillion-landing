@@ -209,11 +209,11 @@
             "card_wr": "Gewinnrate",
             "card_md": "Max DD",
             "card_ill": "Illustratives Profil — nicht indikativ für einen echten Nutzer",
-            "t1": "🔒 Nur Lesezugriff",
-            "t2": "🔑 Non-custodial",
-            "t3": "🛡 Verschlüsselt",
-            "t4": "📐 Transparente Methodik",
-            "t5": "⚖ Keine Finanzberatung",
+            "t1": "Nur-Lesen",
+            "t2": "Non-custodial",
+            "t3": "Verschlüsselt",
+            "t4": "Transparente Methodik",
+            "t5": "Keine Finanzberatung",
             "subtext": "Verified financial discipline infrastructure. Non-custodial. Data-driven. Risk-aware."
         },
         "paradigm": {
