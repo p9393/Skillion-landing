@@ -1,4 +1,99 @@
+/**
+ * patch-json-characters.mjs  
+ * Direct byte-level replacement of known corrupted sequences.
+ * 
+ * The corruption pattern is: UTF-8 multi-byte char was read as Latin-1
+ * and re-encoded as UTF-8, creating doubled sequences.
+ * 
+ * We read the file as binary (latin1) and do string replacements,
+ * then write back as UTF-8.
+ */
+
 import { readFileSync, writeFileSync } from 'fs';
+
+// Read as latin1 (each byte = one char) to avoid any re-interpretation
+// Then we can map the corrupted sequences correctly
+
+// What we see in the file (read as UTF-8, so these are the JS string values)
+// We need to replace them with the correct Unicode chars
+
+const fixes = {
+    // em-dash U+2014
+    // UTF-8 of U+2014 is E2 80 94 
+    // When misread as latin1 and re-encoded: â€" (a-hat, euro, left-double-quote)
+    'â\u20AC\u201C': '\u2014',  // em-dash
+    'â\u20AC\u201D': '\u201D',  // right double quote  
+    'â\u20AC\u201C': '\u2014',
+
+    // arrow right U+2192: UTF-8 is E2 86 92 
+    'â\u020C\u00A2': '\u2192',
+
+    // bullet U+2022: UTF-8 is E2 80 A2
+    'â\u20AC\u00A2': '\u2022',
+
+    // Emoji: 🔒 U+1F512: UTF-8 is F0 9F 94 92
+    // Read as latin1: ð (F0) Ÿ (9F) " (94) ' (92) 
+    '\u00F0\u009F\u0094\u0092': '\uD83D\uDD12',
+    // 🔑 U+1F511: F0 9F 94 91
+    '\u00F0\u009F\u0094\u0091': '\uD83D\uDD11',
+    // 🛡 U+1F6E1: F0 9F 9B A1
+    '\u00F0\u009F\u009B\u00A1': '\uD83D\uDEE1',
+    // 📐 U+1F4D0: F0 9F 93 90
+    '\u00F0\u009F\u0093\u0090': '\uD83D\uDCD0',
+    // � U+1F50A: F0 9F 94 8A
+    '\u00F0\u009F\u0094\u008A': '\uD83D\uDD0A',
+    // � U+1F507: F0 9F 94 87
+    '\u00F0\u009F\u0094\u0087': '\uD83D\uDD07',
+
+    // ⚖ U+2696: UTF-8 is E2 9A 96
+    '\u00E2\u009A\u0096': '\u2696\uFE0F',
+
+    // Italian/French/Spanish accented chars
+    // è U+00E8: UTF-8 is C3 A8 -> read as latin1: Ã¨
+    '\u00C3\u00A8': '\u00E8',
+    // é U+00E9: C3 A9 -> Ã©  
+    '\u00C3\u00A9': '\u00E9',
+    // à U+00E0: C3 A0 -> Ã 
+    '\u00C3\u00A0': '\u00E0',
+    // ì U+00EC: C3 AC -> Ã¬
+    '\u00C3\u00AC': '\u00EC',
+    // ò U+00F2: C3 B2 -> Ã²
+    '\u00C3\u00B2': '\u00F2',
+    // ù U+00F9: C3 B9 -> Ã¹
+    '\u00C3\u00B9': '\u00F9',
+    // À U+00C0: C3 80 -> Ã€
+    '\u00C3\u0080': '\u00C0',
+    // È U+00C8: C3 88 -> Ãˆ
+    '\u00C3\u0088': '\u00C8',
+    // É U+00C9: C3 89
+    '\u00C3\u0089': '\u00C9',
+    // ö U+00F6: C3 B6 -> Ã¶
+    '\u00C3\u00B6': '\u00F6',
+    // ü U+00FC: C3 BC -> Ã¼
+    '\u00C3\u00BC': '\u00FC',
+    // ä U+00E4: C3 A4 -> Ã¤
+    '\u00C3\u00A4': '\u00E4',
+    // Ö U+00D6: C3 96 -> Ã–
+    '\u00C3\u0096': '\u00D6',
+    // Ü U+00DC: C3 9C -> Ãœ
+    '\u00C3\u009C': '\u00DC',
+    // Ä U+00C4: C3 84 -> Ã„
+    '\u00C3\u0084': '\u00C4',
+    // ñ U+00F1: C3 B1 -> Ã±
+    '\u00C3\u00B1': '\u00F1',
+    // ó U+00F3: C3 B3 -> Ã³
+    '\u00C3\u00B3': '\u00F3',
+    // í U+00ED: C3 AD -> Ã­
+    '\u00C3\u00AD': '\u00ED',
+    // á U+00E1: C3 A1 -> Ã¡
+    '\u00C3\u00A1': '\u00E1',
+    // ú U+00FA: C3 BA -> Ã º
+    '\u00C3\u00BA': '\u00FA',
+    // middle dot ·: C2 B7 -> Â·
+    '\u00C2\u00B7': '\u00B7',
+    // non-breaking space / not-sign: C2 AC -> Â¬
+    '\u00C2\u00AC': '',
+};
 
 const files = [
     'app/messages/en.json',
@@ -8,81 +103,64 @@ const files = [
     'app/messages/de.json'
 ];
 
-function fixFile(f) {
-    const raw = readFileSync(f, 'utf8');
+function fixFile(filepath) {
+    // Read as binary (latin1) to get raw bytes as chars
+    const raw = readFileSync(filepath, 'latin1');
+
     let s = raw;
 
-    // Remove BOM
-    if (s.charCodeAt(0) === 0xFEFF) { s = s.slice(1); }
+    // Remove UTF-8 BOM (EF BB BF read as latin1 = ï»¿)
+    if (s.startsWith('\xEF\xBB\xBF')) {
+        s = s.slice(3);
+        console.log('  BOM removed');
+    }
 
-    // Fix Windows-1252 double-encoding: em-dash, quotes
-    s = s.replaceAll('\u00e2\u20ac\u201c', '\u2014'); // em-dash
-    s = s.replaceAll('\u00e2\u20ac\u009c', '\u201c'); // left double quote
-    s = s.replaceAll('\u00e2\u20ac\u009d', '\u201d'); // right double quote
-    s = s.replaceAll('\u00e2\u20ac\u02dc', '\u2018'); // left single quote
-    s = s.replaceAll('\u00e2\u20ac\u2122', '\u2019'); // right single quote
-    s = s.replaceAll('\u00e2\u20ac\u00a2', '\u2022'); // bullet
-    s = s.replaceAll('\u00e2\u2020\u2019', '\u2192'); // arrow right
-    s = s.replaceAll('\u00c3\u00a8', '\u00e8'); // e grave
-    s = s.replaceAll('\u00c3\u00a9', '\u00e9'); // e acute
-    s = s.replaceAll('\u00c3\u00a0', '\u00e0'); // a grave
-    s = s.replaceAll('\u00c3\u00ac', '\u00ec'); // i grave
-    s = s.replaceAll('\u00c3\u00b2', '\u00f2'); // o grave
-    s = s.replaceAll('\u00c3\u00b9', '\u00f9'); // u grave
-    s = s.replaceAll('\u00c3\u2026', '\u00c0'); // A grave cap
-    s = s.replaceAll('\u00c3\u02c6', '\u00c8'); // E grave cap
-    s = s.replaceAll('\u00c3\u00b6', '\u00f6'); // o umlaut
-    s = s.replaceAll('\u00c3\u00bc', '\u00fc'); // u umlaut
-    s = s.replaceAll('\u00c3\u00a4', '\u00e4'); // a umlaut
-    s = s.replaceAll('\u00c3\u2013', '\u00d6'); // O umlaut cap
-    s = s.replaceAll('\u00c3\u0153', '\u00dc'); // U umlaut cap
-    s = s.replaceAll('\u00c3\u201e', '\u00c4'); // A umlaut cap
-    s = s.replaceAll('\u00c3\u00b1', '\u00f1'); // n tilde
-    s = s.replaceAll('\u00c3\u00b3', '\u00f3'); // o acute
-    s = s.replaceAll('\u00c3\u00ad', '\u00ed'); // i acute
-    s = s.replaceAll('\u00c3\u00a1', '\u00e1'); // a acute
-    s = s.replaceAll('\u00c3\u00ba', '\u00fa'); // u acute
-    s = s.replaceAll('\u00c3\u030a', '\u00c9'); // E acute cap
-    s = s.replaceAll('\u00c3\u2030', '\u00ca'); // E circumflex cap
-    s = s.replaceAll('\u00c2\u00b7', '\u00b7'); // middle dot
-    s = s.replaceAll('\u00c2\u00ac', ''); // not sign (often garbage)
-    // Emoji double-encode
-    s = s.replaceAll('\u00f0\u0178\u201d\u2019', '\ud83d\udd12'); // lock emoji
-    s = s.replaceAll('\u00f0\u0178\u009b\u00a1', '\ud83d\udee1'); // shield emoji
-    s = s.replaceAll('\u00f0\u0178\u201d\u0090', '\ud83d\udd10'); // key emoji
-    s = s.replaceAll('\u00f0\u0178\u201d\u2021', '\ud83d\udd07'); // speaker off emoji
-    s = s.replaceAll('\u00f0\u0178\u201d\u160a', '\ud83d\udd0a'); // speaker on emoji
-    s = s.replaceAll('\u00e2\u009a\u0096', '\u2696'); // scales emoji
+    let count = 0;
+    for (const [bad, good] of Object.entries(fixes)) {
+        let prev = s;
+        // We need to search for the exact bytes
+        // When read as latin1, each byte is directly a char
+        s = s.split(bad).join(good);
+        if (s !== prev) count++;
+    }
 
-    // Italian specific multi-byte issues
-    s = s.replaceAll('Capacit\u00c3\u00a0', 'Capacit\u00e0');
-    s = s.replaceAll('utilit\u00c3\u00a0', 'utilit\u00e0');
-    s = s.replaceAll('maturit\u00c3\u00a0', 'maturit\u00e0');
-    s = s.replaceAll('Qualit\u00c3\u00a0', 'Qualit\u00e0');
-    s = s.replaceAll('Stabilit\u00c3\u00a0', 'Stabilit\u00e0');
-    s = s.replaceAll('profondit\u00c3\u00a0', 'profondit\u00e0');
-    s = s.replaceAll('velocit\u00c3\u00a0', 'velocit\u00e0');
-    s = s.replaceAll('Credibilit\u00c3\u00a0', 'Credibilit\u00e0');
-    s = s.replaceAll('Verificabilit\u00c3\u00a0', 'Verificabilit\u00e0');
-    s = s.replaceAll('visibilit\u00c3\u00a0', 'visibilit\u00e0');
-    s = s.replaceAll('stabilit\u00c3\u00a0', 'stabilit\u00e0');
-    s = s.replaceAll('\u00c3\u0160', '\u00c8'); // E grave
-    s = s.replaceAll('n\u00c3\u00a9', 'n\u00e9');
-    s = s.replaceAll('N\u00c3\u2030', 'N\u00c9');
+    // Convert the fixed string (which is now a mix of latin1 and unicode)
+    // to a proper Buffer: treat as latin1 -> get bytes -> encode as UTF-8
+    // Actually we need to re-encode: the fixed string has:
+    // - ASCII chars (from the JSON structure, keys, etc.)  
+    // - Correctly decoded unicode chars (U+00E8 etc.) from our fixes
+    // - Remaining un-fixed latin1 bytes that we need to handle
 
+    // Write as UTF-8: since our fixes converted the problematic sequences
+    // to actual Unicode codepoints, writing as UTF-8 will encode them correctly
+    const outBuf = Buffer.from(s, 'latin1');
 
-    // Validate
+    // Parse to validate
+    const utf8str = outBuf.toString('utf8');
     try {
-        JSON.parse(s);
-        writeFileSync(f, Buffer.from(s, 'utf8'));
-        console.log('OK:', f);
-        return true;
+        JSON.parse(utf8str);
     } catch (e) {
-        console.error('ERR:', f, e.message.split('\n')[0]);
+        console.error(`  JSON INVALID: ${e.message.split('\n')[0]}`);
         return false;
     }
+
+    writeFileSync(filepath, outBuf);
+    console.log(`  OK - ${count} fix patterns applied`);
+
+    // Show sample of t1-t5 and footer for verification
+    const sample = utf8str.match(/"t[1-5]"[^,]+/g) || [];
+    if (sample.length > 0) {
+        console.log('  Sample:', sample.join(' | ').substring(0, 120));
+    }
+
+    return true;
 }
 
-let ok = true;
-for (const f of files) ok = fixFile(f) && ok;
-process.exit(ok ? 0 : 1);
+let allOk = true;
+for (const f of files) {
+    console.log(`\n${f}`);
+    allOk = fixFile(f) && allOk;
+}
+
+console.log('\nDone. All OK:', allOk);
+process.exit(allOk ? 0 : 1);
