@@ -5,10 +5,11 @@ import en from "../messages/en.json";
 import it from "../messages/it.json";
 import es from "../messages/es.json";
 import fr from "../messages/fr.json";
+import de from "../messages/de.json";
 
-type LanguageKey = "en" | "it" | "es" | "fr";
+type LanguageKey = "en" | "it" | "es" | "fr" | "de";
 
-const dictionaries: Record<LanguageKey, any> = { en, it, es, fr };
+const dictionaries: Record<LanguageKey, any> = { en, it, es, fr, de };
 
 interface LanguageContextProps {
     lang: LanguageKey;

@@ -1,4 +1,4 @@
-﻿{
+{
     "hero": {
         "title1": "The future of",
         "title2": "gamified finance",
@@ -69,11 +69,11 @@
         "step1_desc": "Connect your trading account. Skillion imports your real history â€” PnL, drawdown, win rate, R/R â€” and verifies it. No opinions. Only data.",
         "step2_label": "Score",
         "step2_title": "Reputation Engine",
-        "step2_desc": "The Skillion Score (0â€“1000) quantifies your edge across five dimensions: Risk Control, Stability, Profit Quality, Drawdown Discipline, and Consistency.",
+        "step2_desc": "The Skillion Score (0—1000) quantifies your edge across five dimensions: Risk Control, Stability, Profit Quality, Drawdown Discipline, and Consistency.",
         "step3_label": "Capital",
         "step3_title": "Merit-Gated Access",
         "step3_desc": "Your score unlocks progression: advanced tools, certified profile, public ranking, and â€” in future phases â€” capital allocation and DeFi modules.",
-        "footer": "Meritocratic â€¢ Verified â€¢ Scalable"
+        "footer": "Meritocratic • Verified • Scalable"
     },
     "score_engine": {
         "section_label": "The Index",
@@ -121,7 +121,7 @@
         "voice_on": "Voice enabled.",
         "voice_off": "Voice disabled.",
         "voice_on_btn": "ðŸ”Š ON",
-        "voice_off_btn": "ðŸ”‡ OFF",
+        "voice_off_btn": "🔇 OFF",
         "audit_log_summary": "Audit log",
         "api_err": "API Error",
         "net_err": "Network error.",
@@ -190,9 +190,9 @@
             "title2": "Becomes Capital.",
             "desc1": "First you become ",
             "desc1_hl": "measurable",
-            "desc2": " â†’ then you become ",
+            "desc2": " → then you become ",
             "desc2_hl": "credible",
-            "desc3": " â†’ then you become ",
+            "desc3": " → then you become ",
             "desc3_hl": "capital-ready.",
             "desc4": "The first infrastructure where discipline is a verified asset.",
             "req_btn": "Request Early Access",
@@ -209,7 +209,7 @@
             "card_wr": "Win Rate",
             "card_md": "Max DD",
             "card_ill": "Illustrative profile â€” not indicative of a real user",
-            "t1": "ðŸ”’ Read-only only",
+            "t1": "🔒 Read-only only",
             "t2": "ðŸ”‘ Non-custodial",
             "t3": "ðŸ›¡ Encrypted",
             "t4": "ðŸ“ Transparent methodology",
@@ -228,7 +228,7 @@
             "c3_r": "Skillion makes it measurable.",
             "desc": "In modern trading and investing, performance is often self-declared and unverified. True financial discipline remains invisible. Skillion introduces a measurable standard of behavioral consistency and risk control.",
             "box_title": "What Skillion truly is. And what it is NOT.",
-            "box_subtitle": "Skillion is not: a prop firm Â· a broker Â· an exchange Â· a fund Â· a signal seller",
+            "box_subtitle": "Skillion is not: a prop firm · a broker · an exchange · a fund · a signal seller",
             "prop_title": "Prop Firm Model",
             "prop_1": "âœ— Evaluates on 30 days",
             "prop_2": "âœ— Search for fast profits",
@@ -242,7 +242,7 @@
         },
         "aurion_layer": {
             "title": "Aurion",
-            "subtitle": "Intelligence Layer Â· Skillion",
+            "subtitle": "Intelligence Layer · Skillion",
             "k1": "Mode",
             "v1": "Behavioral Analysis",
             "k2": "Function",
