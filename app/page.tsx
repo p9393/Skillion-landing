@@ -337,7 +337,7 @@ export default function Page() {
             <h2 className="text-3xl font-semibold text-white md:text-4xl lg:text-5xl leading-tight">
               {t("landing.cta.title1")}<br />
               <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-fuchsia-400 bg-clip-text text-transparent">
-                Reputation Starts Here.
+                {t("landing.cta.title2")}
               </span>
             </h2>
             <p className="mx-auto mt-4 max-w-md text-base text-white/40 leading-relaxed">
