@@ -144,7 +144,7 @@ string BuildTradeJSON()
 
       tradesJson += "{";
       tradesJson += "\"ticket\":"      + IntegerToString(OrderTicket())                              + ",";
-      tradesJson += "\"symbol\":\""    + OrderSymbol()                                               + "\",";
+      tradesJson += "\"symbol\":\""    + EscapeJSON(OrderSymbol())                                    + "\",";
       tradesJson += "\"type\":\""      + (type == OP_BUY ? "buy" : "sell")                          + "\",";
       tradesJson += "\"lots\":"        + DoubleToStr(OrderLots(), 2)                                 + ",";
       tradesJson += "\"openTime\":"    + IntegerToString((int)OrderOpenTime())                       + ",";
@@ -154,7 +154,7 @@ string BuildTradeJSON()
       tradesJson += "\"profit\":"      + DoubleToStr(OrderProfit(), 2)                               + ",";
       tradesJson += "\"commission\":"  + DoubleToStr(OrderCommission(), 2)                           + ",";
       tradesJson += "\"swap\":"        + DoubleToStr(OrderSwap(), 2)                                 + ",";
-      tradesJson += "\"comment\":\""   + OrderComment()                                              + "\"";
+      tradesJson += "\"comment\":\""   + EscapeJSON(OrderComment())                                  + "\"";
       tradesJson += "}";
       count++;
    }
