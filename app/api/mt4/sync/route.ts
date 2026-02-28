@@ -4,7 +4,7 @@ import { calculateSDI, RawTrade } from '@/app/lib/sdi-engine';
 
 // Rate limiting per token (simple in-memory, resets on cold start)
 const rateLimitMap = new Map<string, number>();
-const RATE_LIMIT_MS = 55 * 60 * 1000; // 55 minutes minimum between syncs
+const RATE_LIMIT_MS = 1 * 60 * 1000; // 1 minute (testing)
 
 export async function POST(req: Request) {
     try {
