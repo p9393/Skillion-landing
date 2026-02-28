@@ -100,11 +100,20 @@ void SyncTrades()
 
       Comment("Skillion Reporter v" + eaVersion + sdiStr + " | Last sync: " + TimeToStr(TimeCurrent(), TIME_DATE|TIME_MINUTES));
    }
+   else if(res == -1)
+   {
+      int errCode = GetLastError();
+      Print("SkillionReporter: WebRequest BLOCKED (code ", errCode, "). Enable WebRequests in MT4: Tools > Options > Expert Advisors > Allow WebRequests > add https://skillion.finance");
+      Comment("Skillion Reporter | ERROR: WebRequest blocked." +
+              " Go to: Tools > Options > Expert Advisors" +
+              " > Allow WebRequests > add: https://skillion.finance");
+      Alert("Skillion: WebRequest blocked by MT4.\n\nFix: Tools > Options > Expert Advisors\n> Check 'Allow WebRequests for listed URL'\n> Add: https://skillion.finance");
+   }
    else
    {
       string errMsg = CharArrayToString(responseData);
       Print("SkillionReporter: Sync ERROR — HTTP ", res, " | ", errMsg);
-      Comment("Skillion Reporter | Sync error: HTTP " + IntegerToString(res) + " — check token");
+      Comment("Skillion Reporter | Sync error: HTTP " + IntegerToString(res) + " — " + errMsg);
    }
 
    EventSetTimer(SyncIntervalMin * 60);
