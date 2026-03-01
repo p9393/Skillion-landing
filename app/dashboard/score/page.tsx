@@ -1,198 +1,262 @@
-import { createClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { TrendingUp, TrendingDown, Minus, ShieldCheck, Brain, AlertTriangle, CheckCircle2, Star } from 'lucide-react'
 
-const TIER_CONFIG: Record<string, { color: string; label: string; next: string; nextMin: number }> = {
-    explorer: { color: '#94a3b8', label: 'Explorer', next: 'Builder', nextMin: 300 },
-    builder: { color: '#38bdf8', label: 'Builder', next: 'Strategist', nextMin: 500 },
-    strategist: { color: '#818cf8', label: 'Strategist', next: 'Architect', nextMin: 700 },
-    architect: { color: '#a78bfa', label: 'Architect', next: 'Elite', nextMin: 850 },
-    elite: { color: '#e879f9', label: 'Elite', next: 'Elite', nextMin: 1000 },
-};
+// ── Types ─────────────────────────────────────────────────────────────────────
+interface DimensionScore { name: string; weight: number; raw: number; normalized: number; contribution: number }
+interface AurionReport { summary: string; tier_comment: string; strengths: string[]; flags: string[]; confidence: number; validationOk: boolean }
 
-function ProgressBar({ value, max, color }: { value: number; max: number; color: string }) {
-    const pct = Math.round(Math.min((value / max) * 100, 100));
-    return (
-        <div className="h-1.5 w-full rounded-full bg-white/5">
-            <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${pct}%`, background: color }} />
-        </div>
-    );
+interface ScoreData {
+    sdi_score: number
+    tier: string
+    sharpe_ratio: number
+    sortino_ratio: number
+    max_drawdown_pct: number
+    win_rate: number
+    profit_factor: number
+    z_score_consistency: number
+    total_trades: number
+    trading_days: number
+    net_profit: number
+    gross_profit: number
+    gross_loss: number
+    mt_login: string
+    platform: string
+    computed_at: string
+    raw_metrics: {
+        breakdown: DimensionScore[]
+        aurion: AurionReport
+        avgProfit: number
+        avgLoss: number
+        dataCoverage: number
+        validation: { warnings: string[] }
+    }
 }
 
-function MetricCard({ label, value, sub, color }: { label: string; value: string; sub: string; color: string }) {
-    return (
-        <div className="rounded-2xl border border-white/5 bg-[#0d1220]/60 p-5">
-            <p className="text-xs uppercase tracking-widest text-white/30 mb-2">{label}</p>
-            <p className="text-2xl font-light mb-1" style={{ color }}>{value}</p>
-            <p className="text-xs text-white/30">{sub}</p>
-        </div>
-    );
+const TIER_CONFIG: Record<string, { label: string; color: string; bg: string; next?: string; nextAt: number }> = {
+    explorer: { label: 'Explorer', color: 'text-slate-400', bg: 'bg-slate-400/10', next: 'Builder', nextAt: 300 },
+    builder: { label: 'Builder', color: 'text-blue-400', bg: 'bg-blue-400/10', next: 'Strategist', nextAt: 500 },
+    strategist: { label: 'Strategist', color: 'text-emerald-400', bg: 'bg-emerald-400/10', next: 'Architect', nextAt: 700 },
+    architect: { label: 'Architect', color: 'text-violet-400', bg: 'bg-violet-400/10', next: 'Elite', nextAt: 850 },
+    elite: { label: 'Elite', color: 'text-amber-400', bg: 'bg-amber-400/10', nextAt: 1000 },
 }
 
+function MetricCard({ label, value, sub, good }: { label: string; value: string; sub?: string; good?: boolean | null }) {
+    const Icon = good === true ? TrendingUp : good === false ? TrendingDown : Minus
+    const color = good === true ? 'text-emerald-400' : good === false ? 'text-red-400' : 'text-white/40'
+    return (
+        <div className="bg-[#0d1220]/60 border border-white/5 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-1">
+                <p className="text-xs uppercase tracking-widest text-white/30 font-semibold">{label}</p>
+                <Icon className={`w-3.5 h-3.5 ${color}`} />
+            </div>
+            <p className="text-xl font-light text-white">{value}</p>
+            {sub && <p className="text-xs text-white/30 mt-0.5">{sub}</p>}
+        </div>
+    )
+}
+
+function DimensionBar({ d }: { d: DimensionScore }) {
+    const pct = Math.round(d.normalized * 100)
+    const barColor = pct >= 70 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-red-500'
+    return (
+        <div>
+            <div className="flex items-center justify-between mb-1.5">
+                <p className="text-sm text-white/70">{d.name}</p>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-white/30">{Math.round(d.weight * 100)}% weight</span>
+                    <span className="text-sm font-medium text-white">{d.contribution} pt</span>
+                </div>
+            </div>
+            <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${barColor}`} style={{ width: `${pct}%` }} />
+            </div>
+        </div>
+    )
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default async function ScorePage() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect('/auth/login');
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { cookies: { getAll: () => cookieStore.getAll(), setAll: () => { } } }
+    )
 
-    // Fetch SDI score
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) redirect('/auth/login')
+
     const { data: score } = await supabase
         .from('sdi_scores')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .order('computed_at', { ascending: false })
+        .limit(1)
+        .single() as { data: ScoreData | null }
 
-    // Fetch recent trades
-    const { data: trades } = await supabase
-        .from('mt4_trades')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('close_time', { ascending: false })
-        .limit(20);
+    // ── No score yet ──────────────────────────────────────────────────────────
+    if (!score) {
+        return (
+            <div className="max-w-lg mx-auto text-center py-20 space-y-5">
+                <div className="w-16 h-16 rounded-2xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 flex items-center justify-center mx-auto">
+                    <Star className="w-8 h-8 text-[#00F0FF]" />
+                </div>
+                <h2 className="text-2xl font-light text-white">No SDI Score yet</h2>
+                <p className="text-white/40 text-sm leading-relaxed">Upload your MT4/MT5 statement to get your full Skillion Discipline Index score, verified by Aurion.</p>
+                <a href="/dashboard/connect" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 text-[#00F0FF] text-sm font-medium hover:bg-[#00F0FF]/20 transition-colors">
+                    Connect Trading Account →
+                </a>
+            </div>
+        )
+    }
 
-    const sdi = score?.sdi_score ?? 0;
-    const tier = score?.tier ?? 'explorer';
-    const cfg = TIER_CONFIG[tier] ?? TIER_CONFIG.explorer;
-    const nextPts = Math.max(0, cfg.nextMin - sdi);
+    const tier = TIER_CONFIG[score.tier] ?? TIER_CONFIG.explorer
+    const aurion = score.raw_metrics?.aurion as AurionReport | undefined
+    const breakdown = score.raw_metrics?.breakdown as DimensionScore[] | undefined
+    const warnings = score.raw_metrics?.validation?.warnings ?? []
+
+    // Progress to next tier
+    const tierMin = { explorer: 0, builder: 300, strategist: 500, architect: 700, elite: 850 }[score.tier] ?? 0
+    const tierMax = tier.nextAt
+    const progress = tierMax > tierMin ? Math.round(((score.sdi_score - tierMin) / (tierMax - tierMin)) * 100) : 100
 
     return (
-        <div className="space-y-8 max-w-5xl">
+        <div className="max-w-2xl mx-auto space-y-6 pb-16">
 
-            {/* No data state */}
-            {!score && (
-                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-8 text-center">
-                    <p className="text-amber-400 font-medium mb-2">No score data yet</p>
-                    <p className="text-white/40 text-sm mb-6">
-                        Connect your MetaTrader account to start building your Skillion Discipline Index.
-                    </p>
-                    <Link href="/dashboard/connect/mt4-ea" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 text-[#00F0FF] text-sm font-medium hover:bg-[#00F0FF]/20 transition-colors">
-                        Connect MetaTrader →
-                    </Link>
+            {/* Header */}
+            <div>
+                <h2 className="text-2xl font-light text-white tracking-wide mb-1">Skillion Discipline Index</h2>
+                <p className="text-white/40 text-xs">
+                    {score.platform} · Login: {score.mt_login || 'N/A'} ·
+                    Last analysis: {new Date(score.computed_at).toLocaleDateString('it-IT')}
+                </p>
+            </div>
+
+            {/* Score Hero */}
+            <div className={`rounded-2xl border border-white/5 p-8 text-center ${tier.bg} relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/20 pointer-events-none" />
+                <div className="relative z-10">
+                    <p className={`text-xs uppercase tracking-widest font-semibold mb-2 ${tier.color}`}>SDI Score · {tier.label}</p>
+                    <p className="text-7xl font-thin text-white mb-1">{score.sdi_score}</p>
+                    <p className="text-white/30 text-sm">/1000</p>
+
+                    {/* Tier progress */}
+                    {score.tier !== 'elite' && (
+                        <div className="mt-5 max-w-xs mx-auto">
+                            <div className="flex justify-between text-xs text-white/30 mb-1.5">
+                                <span>{tier.label}</span>
+                                <span>{tier.next}</span>
+                            </div>
+                            <div className="h-1.5 rounded-full bg-white/5">
+                                <div className={`h-full rounded-full ${tier.color.replace('text-', 'bg-')}`} style={{ width: `${progress}%` }} />
+                            </div>
+                            <p className="text-xs text-white/20 mt-1 text-right">{tierMax - score.sdi_score} pt to next tier</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Validation warnings */}
+            {warnings.length > 0 && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-1.5">
+                    <div className="flex items-center gap-2 mb-2">
+                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                        <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Data Notices</p>
+                    </div>
+                    {warnings.map((w, i) => <p key={i} className="text-xs text-amber-300/70">{w}</p>)}
                 </div>
             )}
 
-            {/* Score Hero */}
-            {score && (
-                <>
-                    <div className="rounded-2xl border border-white/8 bg-[#06080f]/85 p-8">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-                            <div>
-                                <p className="text-xs uppercase tracking-[0.22em] text-white/30 mb-3">Skillion Discipline Index</p>
-                                <div className="flex items-end gap-3">
-                                    <p className="text-7xl font-light tabular-nums" style={{ color: cfg.color }}>
-                                        {Math.round(sdi)}
-                                    </p>
-                                    <span className="text-2xl text-white/20 font-light mb-2">/1000</span>
-                                </div>
-                                <div className="mt-4 flex items-center gap-3">
-                                    <span className="px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest"
-                                        style={{ borderColor: cfg.color + '40', backgroundColor: cfg.color + '15', color: cfg.color }}>
-                                        {cfg.label}
-                                    </span>
-                                    <span className="text-xs text-white/30">
-                                        {tier === 'elite'
-                                            ? 'Maximum tier achieved'
-                                            : `${nextPts} pts to ${cfg.next}`}
-                                    </span>
-                                </div>
-                                {tier !== 'elite' && (
-                                    <div className="mt-4 w-64">
-                                        <ProgressBar value={sdi % 200 || sdi} max={200} color={cfg.color} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="space-y-2 text-sm text-white/40">
-                                <p><span className="text-white/20">Platform:</span> {score.platform}</p>
-                                <p><span className="text-white/20">Login:</span> {score.mt_login}</p>
-                                <p><span className="text-white/20">Broker:</span> {score.broker || '—'}</p>
-                                <p><span className="text-white/20">Last sync:</span> {score.computed_at ? new Date(score.computed_at).toLocaleString() : '—'}</p>
-                            </div>
+            {/* Aurion Analysis */}
+            {aurion && (
+                <div className="rounded-2xl border border-[#00F0FF]/10 bg-[#0d1220]/60 p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <Brain className="w-4 h-4 text-[#00F0FF]" />
+                            <p className="text-sm font-medium text-[#00F0FF]">Aurion Analysis</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            {aurion.validationOk
+                                ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                : <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                            }
+                            <span className="text-xs text-white/30">Confidence: {aurion.confidence}%</span>
                         </div>
                     </div>
 
-                    {/* Summary stats */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <MetricCard label="Total Trades" value={String(score.total_trades)} sub="closed positions" color="#00F0FF" />
-                        <MetricCard label="Win Rate" value={`${((score.win_rate || 0) * 100).toFixed(1)}%`} sub="profitable trades" color="#a3e635" />
-                        <MetricCard label="Profit Factor" value={Number(score.profit_factor || 0).toFixed(2)} sub="gross P / gross L" color="#818cf8" />
-                        <MetricCard label="Net Profit" value={`${score.net_profit >= 0 ? '+' : ''}${Number(score.net_profit || 0).toFixed(2)}`} sub="all closed trades" color={score.net_profit >= 0 ? '#4ade80' : '#f87171'} />
-                    </div>
+                    <p className="text-sm text-white/60 leading-relaxed">{aurion.summary}</p>
+                    {aurion.tier_comment && (
+                        <p className="text-xs text-[#00F0FF]/50 italic">{aurion.tier_comment}</p>
+                    )}
 
-                    {/* Dimension breakdown */}
-                    {score.raw_metrics && Array.isArray(score.raw_metrics) && score.raw_metrics.length > 0 && (
-                        <div className="rounded-2xl border border-white/5 bg-[#0d1220]/60 p-6">
-                            <p className="text-sm font-medium text-white/60 uppercase tracking-widest mb-5">Score Breakdown</p>
-                            <div className="space-y-4">
-                                {(score.raw_metrics as Array<{ name: string; raw: number; normalized: number; weight: number; contribution: number }>).map((dim) => (
-                                    <div key={dim.name}>
-                                        <div className="flex justify-between text-xs mb-1.5">
-                                            <span className="text-white/50">{dim.name}</span>
-                                            <span className="text-white/30">{dim.contribution} pts · {Math.round(dim.weight * 100)}% weight</span>
-                                        </div>
-                                        <ProgressBar value={dim.normalized} max={1} color={cfg.color} />
-                                    </div>
-                                ))}
-                            </div>
+                    {aurion.strengths?.length > 0 && (
+                        <div className="space-y-1.5">
+                            <p className="text-xs uppercase tracking-widest text-emerald-400/60 font-semibold">Strengths</p>
+                            {aurion.strengths.map((s, i) => (
+                                <div key={i} className="flex items-start gap-2">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
+                                    <p className="text-xs text-white/50">{s}</p>
+                                </div>
+                            ))}
                         </div>
                     )}
 
-                    {/* Risk metrics */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <MetricCard label="Sharpe Ratio" value={Number(score.sharpe_ratio || 0).toFixed(2)} sub="risk-adjusted return" color="#00F0FF" />
-                        <MetricCard label="Sortino Ratio" value={Number(score.sortino_ratio || 0).toFixed(2)} sub="downside-adj return" color="#818cf8" />
-                        <MetricCard label="Max Drawdown" value={`${Number(score.max_drawdown_pct || 0).toFixed(1)}%`} sub="peak to trough" color={score.max_drawdown_pct > 25 ? '#f87171' : '#4ade80'} />
-                    </div>
-
-                    {/* Recent trades */}
-                    {trades && trades.length > 0 && (
-                        <div className="rounded-2xl border border-white/5 bg-[#0d1220]/60 overflow-hidden">
-                            <p className="text-sm font-medium text-white/60 uppercase tracking-widest p-5 pb-3">Recent Trade History</p>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-xs">
-                                    <thead>
-                                        <tr className="border-b border-white/5">
-                                            <th className="px-5 py-2 text-left text-white/30 font-medium">Ticket</th>
-                                            <th className="px-5 py-2 text-left text-white/30 font-medium">Symbol</th>
-                                            <th className="px-5 py-2 text-left text-white/30 font-medium">Type</th>
-                                            <th className="px-5 py-2 text-left text-white/30 font-medium">Lots</th>
-                                            <th className="px-5 py-2 text-right text-white/30 font-medium">Profit</th>
-                                            <th className="px-5 py-2 text-right text-white/30 font-medium">Close</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {trades.map((t) => {
-                                            const p = Number(t.profit) + Number(t.commission || 0) + Number(t.swap || 0);
-                                            return (
-                                                <tr key={t.id} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                                                    <td className="px-5 py-2 text-white/30 font-mono">{t.ticket}</td>
-                                                    <td className="px-5 py-2 text-white/60 font-medium">{t.symbol}</td>
-                                                    <td className="px-5 py-2">
-                                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${t.trade_type === 'buy' ? 'bg-sky-500/10 text-sky-400' : 'bg-rose-500/10 text-rose-400'}`}>
-                                                            {t.trade_type}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-5 py-2 text-white/40">{Number(t.lots).toFixed(2)}</td>
-                                                    <td className={`px-5 py-2 text-right font-medium ${p >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                                                        {p >= 0 ? '+' : ''}{p.toFixed(2)}
-                                                    </td>
-                                                    <td className="px-5 py-2 text-right text-white/30">
-                                                        {t.close_time ? new Date(t.close_time).toLocaleDateString() : '—'}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                    {aurion.flags?.length > 0 && (
+                        <div className="space-y-1.5">
+                            <p className="text-xs uppercase tracking-widest text-amber-400/60 font-semibold">Areas to improve</p>
+                            {aurion.flags.map((f, i) => (
+                                <div key={i} className="flex items-start gap-2">
+                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" />
+                                    <p className="text-xs text-white/50">{f}</p>
+                                </div>
+                            ))}
                         </div>
                     )}
 
-                    {/* Disclaimer */}
-                    <p className="text-xs text-white/20 text-center leading-relaxed">
-                        The Skillion Discipline Index (SDI) is an algorithmic metric for informational purposes only.
-                        It does not constitute financial advice or guarantee future performance.
-                    </p>
-                </>
+                    <div className="border-t border-white/5 pt-3 flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#00F0FF]/50" />
+                        <p className="text-xs text-white/25">Score validated by Aurion — Skillion Intelligence Layer</p>
+                    </div>
+                </div>
             )}
+
+            {/* Key Metrics Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <MetricCard label="Net Profit" value={`${score.net_profit >= 0 ? '+' : ''}${score.net_profit.toFixed(0)}`} good={score.net_profit > 0} />
+                <MetricCard label="Win Rate" value={`${(score.win_rate * 100).toFixed(1)}%`} good={score.win_rate >= 0.5} />
+                <MetricCard label="Profit Factor" value={score.profit_factor.toFixed(2)} good={score.profit_factor >= 1.5} />
+                <MetricCard label="Max Drawdown" value={`${score.max_drawdown_pct.toFixed(1)}%`} good={score.max_drawdown_pct <= 15} />
+                <MetricCard label="Sharpe Ratio" value={score.sharpe_ratio.toFixed(2)} sub="annualized" good={score.sharpe_ratio >= 1} />
+                <MetricCard label="Sortino Ratio" value={score.sortino_ratio.toFixed(2)} sub="downside-adj." good={score.sortino_ratio >= 1} />
+                <MetricCard label="Total Trades" value={score.total_trades.toString()} sub={`${score.trading_days} trading days`} good={null} />
+                <MetricCard label="Z-Score (CV)" value={score.z_score_consistency.toFixed(2)} sub="consistency" good={score.z_score_consistency <= 1.5} />
+                <MetricCard label="Gross Profit" value={`+${score.gross_profit.toFixed(0)}`} good={true} />
+            </div>
+
+            {/* SDI Breakdown */}
+            {breakdown && breakdown.length > 0 && (
+                <div className="rounded-2xl border border-white/5 bg-[#0d1220]/60 p-6 space-y-4">
+                    <p className="text-xs uppercase tracking-widest text-white/30 font-semibold mb-2">Score Breakdown</p>
+                    {breakdown.map(d => <DimensionBar key={d.name} d={d} />)}
+                    <div className="border-t border-white/5 pt-3 flex justify-between text-xs text-white/30">
+                        <span>Total</span>
+                        <span className="font-medium text-white">{breakdown.reduce((a, b) => a + b.contribution, 0)} / 1000</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Re-upload CTA */}
+            <div className="rounded-xl border border-white/5 bg-[#0d1220]/40 p-4 flex items-center justify-between">
+                <div>
+                    <p className="text-sm text-white/60">Want to update your score?</p>
+                    <p className="text-xs text-white/30">Upload a new statement from MetaTrader</p>
+                </div>
+                <a href="/dashboard/connect" className="px-4 py-2 rounded-lg bg-[#00F0FF]/10 border border-[#00F0FF]/20 text-[#00F0FF] text-xs font-medium hover:bg-[#00F0FF]/20 transition-colors whitespace-nowrap">
+                    Update →
+                </a>
+            </div>
         </div>
-    );
+    )
 }

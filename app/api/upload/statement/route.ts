@@ -1,9 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import crypto from 'crypto'
 import { parseMT4Statement } from '@/app/lib/mt4-parser'
-import { calculateSDI, RawTrade } from '@/app/lib/sdi-engine'
+import { calculateSDI, validateTradeData, RawTrade } from '@/app/lib/sdi-engine'
+import { analyzeWithAurion } from '@/app/lib/aurion-analyst'
 
 export async function POST(req: Request) {
     try {
@@ -26,50 +26,79 @@ export async function POST(req: Request) {
         const file = formData.get('file') as File | null
         if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
 
-        const buffer = await file.arrayBuffer()
-        const fileBytes = new Uint8Array(buffer)
+        if (file.size > 15 * 1024 * 1024)
+            return NextResponse.json({ error: 'File too large (max 15 MB)' }, { status: 400 })
 
-        if (fileBytes.byteLength > 15 * 1024 * 1024)
-            return NextResponse.json({ error: 'File exceeds 15 MB limit' }, { status: 400 })
-
-        const checksum = crypto.createHash('sha256').update(Buffer.from(fileBytes)).digest('hex')
-
-        // ── Admin client ─────────────────────────────────────────────────────
         const admin = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.SUPABASE_SERVICE_ROLE_KEY!,
             { cookies: { getAll: () => [], setAll: () => { } } }
         )
 
-        // ── 1. Upload raw file to Storage ─────────────────────────────────
-        await admin.storage.createBucket('statements', { public: false }).catch(() => { })
-        const ext = file.name.split('.').pop() || 'html'
-        const filePath = `${user.id}/${Date.now()}.${ext}`
-
-        const { error: uploadErr } = await admin.storage
-            .from('statements')
-            .upload(filePath, fileBytes, { contentType: file.type || 'text/html' })
-
-        if (uploadErr) {
-            console.error('[upload] Storage error:', uploadErr.message)
-            // Non-fatal — continue with parse
-        }
-
-        // ── 2. Parse HTML statement ───────────────────────────────────────
-        const html = new TextDecoder('utf-8').decode(fileBytes)
+        // ── 1. Parse HTML ─────────────────────────────────────────────────────
+        const html = new TextDecoder('utf-8').decode(await file.arrayBuffer())
         const parsed = parseMT4Statement(html)
 
-        console.log(`[upload] Parsed ${parsed.trades.length} trades | Platform: ${parsed.platform} | Login: ${parsed.login}`)
+        console.log(`[upload] Parsed: ${parsed.trades.length} trades | ${parsed.platform} | login: ${parsed.login}`)
 
         if (parsed.trades.length === 0) {
             return NextResponse.json({
                 success: false,
-                message: 'No closed BUY/SELL trades found in the file. Make sure you saved "All History" in MT4 before exporting.',
-                parsed: { platform: parsed.platform, login: parsed.login, trades: 0 },
+                validation_status: 'insufficient_data',
+                message: 'No closed BUY/SELL trades found. In MT4: Account History tab → right-click → All History → Save as Report',
+                actualTrades: 0,
+                actualDays: 0,
+                minTradesRequired: 10,
+                minDaysRequired: 30,
             }, { status: 422 })
         }
 
-        // ── 3. Upsert trades into mt4_trades ─────────────────────────────
+        // ── 2. Validation Gate ────────────────────────────────────────────────
+        const rawTrades: RawTrade[] = parsed.trades.map(t => ({
+            ticket: t.ticket,
+            symbol: t.symbol,
+            type: t.type,
+            lots: t.lots,
+            openTime: t.openTime,
+            closeTime: t.closeTime,
+            openPrice: t.openPrice,
+            closePrice: t.closePrice,
+            profit: t.profit,
+            commission: t.commission,
+            swap: t.swap,
+        }))
+
+        const validation = validateTradeData(rawTrades)
+        console.log(`[upload] Validation: ${validation.status} — ${validation.reason}`)
+
+        if (!validation.isValid) {
+            return NextResponse.json({
+                success: false,
+                validation_status: validation.status,
+                message: validation.reason,
+                warnings: validation.warnings,
+                actualTrades: validation.actualTrades,
+                actualDays: validation.actualDays,
+                minTradesRequired: validation.minTradesRequired,
+                minDaysRequired: validation.minDaysRequired,
+            }, { status: 422 })
+        }
+
+        // ── 3. SDI Calculation (all 7 dimensions) ─────────────────────────────
+        const sdiResult = calculateSDI(rawTrades)
+        console.log(`[upload] SDI: ${sdiResult.sdi} | Tier: ${sdiResult.tier}`)
+
+        // ── 4. Aurion Analysis (AI validation + behavioral profile) ───────────
+        console.log('[upload] Calling Aurion for behavioral analysis...')
+        const aurionReport = await analyzeWithAurion(
+            sdiResult,
+            validation.actualTrades,
+            validation.actualDays,
+            user.email ?? 'trader',
+        )
+        console.log(`[upload] Aurion: confidence=${aurionReport.confidence} | valid=${aurionReport.validationOk}`)
+
+        // ── 5. Upsert trades ──────────────────────────────────────────────────
         const tradeRows = parsed.trades.map(t => ({
             user_id: user.id,
             ticket: t.ticket,
@@ -89,54 +118,43 @@ export async function POST(req: Request) {
             mt_server: parsed.server,
         }))
 
-        const { error: upsertErr } = await admin
-            .from('mt4_trades')
+        await admin.from('mt4_trades')
             .upsert(tradeRows, { onConflict: 'user_id,ticket', ignoreDuplicates: true })
+            .then(({ error }) => { if (error) console.error('[upload] Upsert trades error:', error.message) })
 
-        if (upsertErr) console.error('[upload] Upsert error:', upsertErr.message)
-
-        // ── 4. Calculate SDI ──────────────────────────────────────────────
-        const rawTrades: RawTrade[] = parsed.trades.map(t => ({
-            ticket: t.ticket,
-            symbol: t.symbol,
-            type: t.type,
-            lots: t.lots,
-            openTime: t.openTime,
-            closeTime: t.closeTime,
-            openPrice: t.openPrice,
-            closePrice: t.closePrice,
-            profit: t.profit,
-            commission: t.commission,
-            swap: t.swap,
-        }))
-
-        const result = calculateSDI(rawTrades)
-
-        // ── 5. Upsert SDI score ───────────────────────────────────────────
+        // ── 6. Save SDI Score + Aurion Report ────────────────────────────────
         await admin.from('sdi_scores').upsert({
             user_id: user.id,
             computed_at: new Date().toISOString(),
-            sdi_score: result.sdi,
-            sharpe_ratio: result.sharpe,
-            sortino_ratio: result.sortino,
-            max_drawdown_pct: result.maxDrawdownPct,
-            win_rate: result.winRate,
-            profit_factor: result.profitFactor,
-            z_score_consistency: result.zScoreConsistency,
-            total_trades: result.totalTrades,
-            trading_days: result.tradingDays,
-            tier: result.tier,
-            net_profit: result.netProfit,
-            gross_profit: result.grossProfit,
-            gross_loss: result.grossLoss,
-            raw_metrics: result.breakdown,
+            sdi_score: sdiResult.sdi,
+            sharpe_ratio: sdiResult.sharpe,
+            sortino_ratio: sdiResult.sortino,
+            max_drawdown_pct: sdiResult.maxDrawdownPct,
+            win_rate: sdiResult.winRate,
+            profit_factor: sdiResult.profitFactor,
+            z_score_consistency: sdiResult.zScoreConsistency,
+            total_trades: sdiResult.totalTrades,
+            trading_days: sdiResult.tradingDays,
+            tier: sdiResult.tier,
+            net_profit: sdiResult.netProfit,
+            gross_profit: sdiResult.grossProfit,
+            gross_loss: sdiResult.grossLoss,
+            raw_metrics: {
+                breakdown: sdiResult.breakdown,
+                aurion: aurionReport,
+                validation: validation,
+                avgProfit: sdiResult.avgProfit,
+                avgLoss: sdiResult.avgLoss,
+                dataCoverage: sdiResult.dataCoverage,
+            },
             platform: parsed.platform,
             broker: '',
             mt_login: parsed.login,
             mt_server: parsed.server,
         }, { onConflict: 'user_id' })
+            .then(({ error }) => { if (error) console.error('[upload] Upsert sdi_scores error:', error.message) })
 
-        // ── 6. Update data_sources status ────────────────────────────────
+        // ── 7. Update data_sources ────────────────────────────────────────────
         try {
             await admin.from('data_sources').upsert({
                 user_id: user.id,
@@ -153,31 +171,47 @@ export async function POST(req: Request) {
                 }
             }, { onConflict: 'user_id,source_type' })
         } catch {
-            // fallback: insert if no unique constraint
             await admin.from('data_sources').insert({
                 user_id: user.id,
                 source_type: 'upload',
                 provider: `${parsed.platform}_statement`,
                 verification_level: 'statement',
                 status: 'verified',
-                metadata: { originalFilename: file.name, tradeCount: parsed.trades.length, platform: parsed.platform, login: parsed.login }
-            })
+                metadata: { originalFilename: file.name, tradeCount: parsed.trades.length }
+            }).then(() => { })
         }
 
-        console.log(`[upload] SDI: ${result.sdi} | Tier: ${result.tier} | Trades: ${result.totalTrades}`)
-
+        // ── 8. Return ─────────────────────────────────────────────────────────
         return NextResponse.json({
             success: true,
-            sdi: result.sdi,
-            tier: result.tier,
-            trades: result.totalTrades,
+            validation_status: 'validated',
+            sdi: sdiResult.sdi,
+            tier: sdiResult.tier,
+            trades: sdiResult.totalTrades,
+            tradingDays: sdiResult.tradingDays,
             platform: parsed.platform,
             login: parsed.login,
-            message: `SDI Score: ${result.sdi} — Tier: ${result.tier.charAt(0).toUpperCase() + result.tier.slice(1)}`,
+            warnings: validation.warnings,
+            aurion: {
+                summary: aurionReport.summary,
+                tier_comment: aurionReport.tier_comment,
+                strengths: aurionReport.strengths,
+                flags: aurionReport.flags,
+                confidence: aurionReport.confidence,
+                validationOk: aurionReport.validationOk,
+            },
+            metrics: {
+                sharpe: sdiResult.sharpe,
+                sortino: sdiResult.sortino,
+                maxDrawdown: sdiResult.maxDrawdownPct,
+                winRate: Math.round(sdiResult.winRate * 100),
+                profitFactor: sdiResult.profitFactor,
+                netProfit: sdiResult.netProfit,
+            },
         })
 
     } catch (err: unknown) {
-        console.error('[upload] Error:', err)
+        console.error('[upload] Unhandled error:', err)
         const message = err instanceof Error ? err.message : 'Unknown error'
         return NextResponse.json({ error: 'Internal server error', details: message }, { status: 500 })
     }

@@ -52,7 +52,79 @@ export interface DimensionScore {
     weight: number;
     raw: number;
     normalized: number;   // 0–1
-    contribution: number; // points to SDI (normalized * weight * 1000)
+    contribution: number; // points to SDI
+}
+
+export interface ValidationResult {
+    isValid: boolean;
+    status: 'validated' | 'insufficient_data' | 'anomaly_detected';
+    reason: string;
+    warnings: string[];
+    minTradesRequired: number;
+    minDaysRequired: number;
+    actualTrades: number;
+    actualDays: number;
+}
+
+// ─── Validation Gate ──────────────────────────────────────────────────────────
+
+export function validateTradeData(trades: RawTrade[]): ValidationResult {
+    const MIN_TRADES = 10;
+    const MIN_DAYS = 30;
+    const warnings: string[] = [];
+
+    const closed = trades.filter(t => t.closeTime > 0 && typeof t.profit === 'number' && !isNaN(t.profit));
+    const actualTrades = closed.length;
+
+    // Calendar days
+    const times = closed.map(t => t.closeTime).sort((a, b) => a - b);
+    const actualDays = times.length >= 2
+        ? Math.floor((times[times.length - 1] - times[0]) / 86400)
+        : 0;
+
+    // Min trades
+    if (actualTrades < MIN_TRADES) {
+        return {
+            isValid: false, status: 'insufficient_data',
+            reason: `At least ${MIN_TRADES} closed trades are required. Found: ${actualTrades}.`,
+            warnings, minTradesRequired: MIN_TRADES, minDaysRequired: MIN_DAYS,
+            actualTrades, actualDays,
+        };
+    }
+
+    // Min days
+    if (actualDays < MIN_DAYS) {
+        return {
+            isValid: false, status: 'insufficient_data',
+            reason: `At least ${MIN_DAYS} calendar days of trading history required. Found: ${actualDays} days.`,
+            warnings, minTradesRequired: MIN_TRADES, minDaysRequired: MIN_DAYS,
+            actualTrades, actualDays,
+        };
+    }
+
+    // Symbol diversity
+    const symbols = new Set(closed.map(t => t.symbol?.toUpperCase() || 'UNKNOWN'));
+    if (symbols.size === 1) warnings.push('Single instrument traded — diversification score may be limited.');
+
+    // Anomaly: suspiciously perfect win rate
+    const wins = closed.filter(t => (t.profit + (t.commission || 0) + (t.swap || 0)) > 0).length;
+    const winRate = wins / actualTrades;
+    if (winRate >= 0.98 && actualTrades >= 20) {
+        warnings.push('Win rate ≥ 98% — potential data anomaly or backtest data detected.');
+    }
+
+    // Anomaly: all trades on the same day
+    const tradingDays = new Set(times.map(t => new Date(t * 1000).toDateString())).size;
+    if (tradingDays < 3 && actualTrades > 20) {
+        warnings.push('All trades concentrated on fewer than 3 days — continuity score will be low.');
+    }
+
+    return {
+        isValid: true, status: 'validated',
+        reason: `${actualTrades} trades over ${actualDays} days — sufficient for full SDI analysis.`,
+        warnings, minTradesRequired: MIN_TRADES, minDaysRequired: MIN_DAYS,
+        actualTrades, actualDays,
+    };
 }
 
 // ─── Main Entry Point ────────────────────────────────────────────────────────
