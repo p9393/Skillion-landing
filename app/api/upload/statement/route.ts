@@ -137,22 +137,24 @@ export async function POST(req: Request) {
         }, { onConflict: 'user_id' })
 
         // ── 6. Update data_sources status ────────────────────────────────
-        await admin.from('data_sources').upsert({
-            user_id: user.id,
-            source_type: 'upload',
-            provider: `${parsed.platform}_statement`,
-            verification_level: 'statement',
-            status: 'verified',
-            metadata: {
-                originalFilename: file.name,
-                tradeCount: parsed.trades.length,
-                platform: parsed.platform,
-                login: parsed.login,
-                parsedAt: new Date().toISOString(),
-            }
-        }, { onConflict: 'user_id,source_type' }).catch(() =>
-            // fallback: insert if no unique constraint yet
-            admin.from('data_sources').insert({
+        try {
+            await admin.from('data_sources').upsert({
+                user_id: user.id,
+                source_type: 'upload',
+                provider: `${parsed.platform}_statement`,
+                verification_level: 'statement',
+                status: 'verified',
+                metadata: {
+                    originalFilename: file.name,
+                    tradeCount: parsed.trades.length,
+                    platform: parsed.platform,
+                    login: parsed.login,
+                    parsedAt: new Date().toISOString(),
+                }
+            }, { onConflict: 'user_id,source_type' })
+        } catch {
+            // fallback: insert if no unique constraint
+            await admin.from('data_sources').insert({
                 user_id: user.id,
                 source_type: 'upload',
                 provider: `${parsed.platform}_statement`,
@@ -160,7 +162,7 @@ export async function POST(req: Request) {
                 status: 'verified',
                 metadata: { originalFilename: file.name, tradeCount: parsed.trades.length, platform: parsed.platform, login: parsed.login }
             })
-        )
+        }
 
         console.log(`[upload] SDI: ${result.sdi} | Tier: ${result.tier} | Trades: ${result.totalTrades}`)
 
