@@ -97,7 +97,7 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-4">
         <LanguageSelector />
         <a
-          href="#waitlist"
+          href="/auth/login"
           className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-all font-sans ring-1 ring-white/10"
         >
           {t("navbar.launch_app")}
@@ -139,11 +139,11 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            href="#waitlist"
+            href="/auth/login"
             onClick={() => setMenuOpen(false)}
             className="mt-2 rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 px-4 py-3 text-sm font-semibold text-white text-center hover:opacity-90 transition-opacity"
           >
-            {t("navbar.req_btn")}
+            {t("navbar.launch_app")}
           </a>
         </div>
       )}
