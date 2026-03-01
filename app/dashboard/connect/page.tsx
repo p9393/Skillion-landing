@@ -87,14 +87,13 @@ export default function ConnectPage() {
 
             setResult(data as UploadResult);
             setStage('success');
-            setTimeout(() => router.push('/dashboard/score'), 3500);
 
         } catch {
             clearTimeout(aurionTimer);
             setErrMsg('Errore di rete. Verifica la connessione e riprova.');
             setStage('error');
         }
-    }, [router]);
+    }, []);
 
     const onDrop = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -185,9 +184,9 @@ export default function ConnectPage() {
                     </div>
                     {stage === 'aurion' && (
                         <div className="flex items-center justify-center gap-2 pt-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-bounce" style={{ animationDelay: '300ms' }} />
+                            <div className="w-2 h-2 rounded-full bg-[#00F0FF] animate-bounce [animation-delay:0ms]" />
+                            <div className="w-2 h-2 rounded-full bg-[#00F0FF] animate-bounce [animation-delay:150ms]" />
+                            <div className="w-2 h-2 rounded-full bg-[#00F0FF] animate-bounce [animation-delay:300ms]" />
                         </div>
                     )}
                 </div>

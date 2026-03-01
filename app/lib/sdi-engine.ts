@@ -259,18 +259,34 @@ function computeSortino(pnls: number[], trades: RawTrade[]): { sortino: number; 
 function computeMaxDrawdown(pnls: number[]): { maxDrawdownPct: number; normalized: number } {
     let peak = 0;
     let equity = 0;
-    let maxDD = 0;
+    let maxDDAbsolute = 0;  // biggest dollar drawdown
+    let peakAtMaxDD = 1;  // the peak when that DD occurred
 
     for (const p of pnls) {
         equity += p;
         if (equity > peak) peak = equity;
-        const dd = peak > 0 ? (peak - equity) / peak : 0;
-        if (dd > maxDD) maxDD = dd;
+        const ddAbs = peak - equity;        // always >= 0
+        if (ddAbs > maxDDAbsolute) {
+            maxDDAbsolute = ddAbs;
+            peakAtMaxDD = peak;
+        }
     }
 
-    const maxDrawdownPct = round2(maxDD * 100);
-    // Score: 0% DD = 1.0; 50%+ DD = 0.0
-    const normalized = clamp(1 - (maxDD / 0.50), 0, 1);
+    // Percentage relative to the peak at the time of the drawdown.
+    // If peak was tiny (≤ 0.01) use gross-loss as reference to avoid div-by-near-zero.
+    let ddRatio: number;
+    if (peakAtMaxDD > 0.01) {
+        ddRatio = maxDDAbsolute / peakAtMaxDD;
+    } else {
+        const grossLoss = Math.abs(pnls.filter(p => p < 0).reduce((a, b) => a + b, 0));
+        ddRatio = grossLoss > 0 ? Math.min(maxDDAbsolute / grossLoss, 1) : 0;
+    }
+
+    // Hard-cap at 100% — losing more than your peak is still a 100% wipe in practice
+    ddRatio = Math.min(ddRatio, 1.0);
+
+    const maxDrawdownPct = round2(ddRatio * 100);
+    const normalized = clamp(1 - (ddRatio / 0.50), 0, 1);
     return { maxDrawdownPct, normalized };
 }
 
