@@ -1,262 +1,266 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from '@/utils/supabase/server'
+import { createClient as createAdmin } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
-import { TrendingUp, TrendingDown, Minus, ShieldCheck, Brain, AlertTriangle, CheckCircle2, Star } from 'lucide-react'
+import Link from 'next/link'
+import {
+    ShieldCheck, TrendingUp, Zap, Star, AlertCircle,
+    RefreshCw, ChevronRight, Info, Award
+} from 'lucide-react'
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-interface DimensionScore { name: string; weight: number; raw: number; normalized: number; contribution: number }
-interface AurionReport { summary: string; tier_comment: string; strengths: string[]; flags: string[]; confidence: number; validationOk: boolean }
-
-interface ScoreData {
-    sdi_score: number
-    tier: string
-    sharpe_ratio: number
-    sortino_ratio: number
-    max_drawdown_pct: number
-    win_rate: number
-    profit_factor: number
-    z_score_consistency: number
-    total_trades: number
-    trading_days: number
-    net_profit: number
-    gross_profit: number
-    gross_loss: number
-    mt_login: string
-    platform: string
-    computed_at: string
-    raw_metrics: {
-        breakdown: DimensionScore[]
-        aurion: AurionReport
-        avgProfit: number
-        avgLoss: number
-        dataCoverage: number
-        validation: { warnings: string[] }
-    }
-}
-
-const TIER_CONFIG: Record<string, { label: string; color: string; bg: string; next?: string; nextAt: number }> = {
-    explorer: { label: 'Explorer', color: 'text-slate-400', bg: 'bg-slate-400/10', next: 'Builder', nextAt: 300 },
-    builder: { label: 'Builder', color: 'text-blue-400', bg: 'bg-blue-400/10', next: 'Strategist', nextAt: 500 },
-    strategist: { label: 'Strategist', color: 'text-emerald-400', bg: 'bg-emerald-400/10', next: 'Architect', nextAt: 700 },
-    architect: { label: 'Architect', color: 'text-violet-400', bg: 'bg-violet-400/10', next: 'Elite', nextAt: 850 },
-    elite: { label: 'Elite', color: 'text-amber-400', bg: 'bg-amber-400/10', nextAt: 1000 },
-}
-
-function MetricCard({ label, value, sub, good }: { label: string; value: string; sub?: string; good?: boolean | null }) {
-    const Icon = good === true ? TrendingUp : good === false ? TrendingDown : Minus
-    const color = good === true ? 'text-emerald-400' : good === false ? 'text-red-400' : 'text-white/40'
-    return (
-        <div className="bg-[#0d1220]/60 border border-white/5 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-1">
-                <p className="text-xs uppercase tracking-widest text-white/30 font-semibold">{label}</p>
-                <Icon className={`w-3.5 h-3.5 ${color}`} />
-            </div>
-            <p className="text-xl font-light text-white">{value}</p>
-            {sub && <p className="text-xs text-white/30 mt-0.5">{sub}</p>}
-        </div>
-    )
-}
-
-function DimensionBar({ d }: { d: DimensionScore }) {
-    const pct = Math.round(d.normalized * 100)
-    const barColor = pct >= 70 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-red-500'
-    return (
-        <div>
-            <div className="flex items-center justify-between mb-1.5">
-                <p className="text-sm text-white/70">{d.name}</p>
-                <div className="flex items-center gap-2">
-                    <span className="text-xs text-white/30">{Math.round(d.weight * 100)}% weight</span>
-                    <span className="text-sm font-medium text-white">{d.contribution} pt</span>
-                </div>
-            </div>
-            <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-                <div className={`h-full rounded-full transition-all ${barColor}`} style={{ width: `${pct}%` }} />
-            </div>
-        </div>
-    )
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-export default async function ScorePage() {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
+function getAdmin() {
+    return createAdmin(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        { cookies: { getAll: () => cookieStore.getAll(), setAll: () => { } } }
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
+}
 
+// ── Tier config ──────────────────────────────────────────────────────────────
+const TIER_CONFIG: Record<string, { label: string; color: string; bg: string; ring: string; description: string }> = {
+    explorer: { label: 'Explorer', color: 'text-slate-300', bg: 'bg-slate-500/10', ring: 'ring-slate-500/30', description: 'Beginning the journey. Focus on building disciplined habits.' },
+    builder: { label: 'Builder', color: 'text-blue-400', bg: 'bg-blue-500/10', ring: 'ring-blue-500/30', description: 'Developing consistency. Risk control is key at this stage.' },
+    strategist: { label: 'Strategist', color: 'text-violet-400', bg: 'bg-violet-500/10', ring: 'ring-violet-500/30', description: 'Solid foundation. You show repeatable edge and discipline.' },
+    architect: { label: 'Architect', color: 'text-amber-400', bg: 'bg-amber-500/10', ring: 'ring-amber-500/30', description: 'Advanced operator. Strong risk-adjusted performance.' },
+    elite: { label: 'Elite', color: 'text-[#00F0FF]', bg: 'bg-[#00F0FF]/10', ring: 'ring-[#00F0FF]/30', description: 'Institutional-grade execution. Top 5% of all traders.' },
+}
+
+const SUB_SCORE_CONFIG = [
+    { key: 'risk_discipline', label: 'Risk Discipline', icon: ShieldCheck, color: 'text-rose-400', bar: 'bg-rose-400', desc: 'Drawdown control, CVaR, leverage management' },
+    { key: 'consistency', label: 'Consistency', icon: TrendingUp, color: 'text-blue-400', bar: 'bg-blue-400', desc: 'Sharpe, Sortino, return stability, positive days' },
+    { key: 'efficiency', label: 'Edge / Efficiency', icon: Zap, color: 'text-emerald-400', bar: 'bg-emerald-400', desc: 'Win rate, profit factor, win/loss ratio, fee drag' },
+    { key: 'professionalism', label: 'Professionalism', icon: Star, color: 'text-amber-400', bar: 'bg-amber-400', desc: 'Diversification, holding time, trade frequency' },
+]
+
+function ScoreRing({ score }: { score: number }) {
+    const radius = 54
+    const circumference = 2 * Math.PI * radius
+    const pct = Math.min(score / 1000, 1)
+    const dashOffset = circumference * (1 - pct)
+
+    return (
+        <svg viewBox="0 0 120 120" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
+            <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
+            <circle
+                cx="60" cy="60" r={radius} fill="none"
+                stroke="url(#scoreGrad)" strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                strokeDashoffset={dashOffset}
+                style={{ transition: 'stroke-dashoffset 1s ease' }}
+            />
+            <defs>
+                <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#7000FF" />
+                    <stop offset="100%" stopColor="#00F0FF" />
+                </linearGradient>
+            </defs>
+        </svg>
+    )
+}
+
+export default async function ScorePage() {
+    const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/auth/login')
 
-    const { data: score } = await supabase
-        .from('sdi_scores')
-        .select('*')
+    const admin = getAdmin()
+
+    // Latest snapshot
+    const { data: snapshot } = await admin
+        .from('score_snapshots')
+        .select('id, sdi_total, risk_discipline, consistency, efficiency, professionalism, tier, data_quality_score, computed_at, period_start, period_end, account_id')
         .eq('user_id', user.id)
         .order('computed_at', { ascending: false })
         .limit(1)
-        .single() as { data: ScoreData | null }
+        .single()
 
-    // ── No score yet ──────────────────────────────────────────────────────────
-    if (!score) {
-        return (
-            <div className="max-w-lg mx-auto text-center py-20 space-y-5">
-                <div className="w-16 h-16 rounded-2xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 flex items-center justify-center mx-auto">
-                    <Star className="w-8 h-8 text-[#00F0FF]" />
-                </div>
-                <h2 className="text-2xl font-light text-white">No SDI Score yet</h2>
-                <p className="text-white/40 text-sm leading-relaxed">Upload your MT4/MT5 statement to get your full Skillion Discipline Index score, verified by Aurion.</p>
-                <a href="/dashboard/connect" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 text-[#00F0FF] text-sm font-medium hover:bg-[#00F0FF]/20 transition-colors">
-                    Connect Trading Account →
-                </a>
-            </div>
-        )
-    }
+    // Factors for this snapshot
+    const { data: factors } = snapshot
+        ? await admin
+            .from('score_factors')
+            .select('sub_score, factor_name, raw_value, normalized_0_1, contribution, direction, explanation')
+            .eq('snapshot_id', snapshot.id)
+            .order('contribution', { ascending: false })
+        : { data: [] }
 
-    const tier = TIER_CONFIG[score.tier] ?? TIER_CONFIG.explorer
-    const aurion = score.raw_metrics?.aurion as AurionReport | undefined
-    const breakdown = score.raw_metrics?.breakdown as DimensionScore[] | undefined
-    const warnings = score.raw_metrics?.validation?.warnings ?? []
+    // Previous snapshot for delta
+    const { data: prevSnapshot } = await admin
+        .from('score_snapshots')
+        .select('sdi_total, tier')
+        .eq('user_id', user.id)
+        .order('computed_at', { ascending: false })
+        .range(1, 1)
+        .single()
 
-    // Progress to next tier
-    const tierMin = { explorer: 0, builder: 300, strategist: 500, architect: 700, elite: 850 }[score.tier] ?? 0
-    const tierMax = tier.nextAt
-    const progress = tierMax > tierMin ? Math.round(((score.sdi_score - tierMin) / (tierMax - tierMin)) * 100) : 100
+    const tier = TIER_CONFIG[snapshot?.tier ?? 'explorer']
+    const totalDelta = snapshot && prevSnapshot ? snapshot.sdi_total - prevSnapshot.sdi_total : null
+    const hasData = !!snapshot
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6 pb-16">
+        <div className="space-y-6 pb-16">
 
             {/* Header */}
-            <div>
-                <h2 className="text-2xl font-light text-white tracking-wide mb-1">Skillion Discipline Index</h2>
-                <p className="text-white/40 text-xs">
-                    {score.platform} · Login: {score.mt_login || 'N/A'} ·
-                    Last analysis: {new Date(score.computed_at).toLocaleDateString('it-IT')}
-                </p>
-            </div>
-
-            {/* Score Hero */}
-            <div className={`rounded-2xl border border-white/5 p-8 text-center ${tier.bg} relative overflow-hidden`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/20 pointer-events-none" />
-                <div className="relative z-10">
-                    <p className={`text-xs uppercase tracking-widest font-semibold mb-2 ${tier.color}`}>SDI Score · {tier.label}</p>
-                    <p className="text-7xl font-thin text-white mb-1">{score.sdi_score}</p>
-                    <p className="text-white/30 text-sm">/1000</p>
-
-                    {/* Tier progress */}
-                    {score.tier !== 'elite' && (
-                        <div className="mt-5 max-w-xs mx-auto">
-                            <div className="flex justify-between text-xs text-white/30 mb-1.5">
-                                <span>{tier.label}</span>
-                                <span>{tier.next}</span>
-                            </div>
-                            <div className="h-1.5 rounded-full bg-white/5">
-                                <div className={`h-full rounded-full ${tier.color.replace('text-', 'bg-')}`} style={{ width: `${progress}%` }} />
-                            </div>
-                            <p className="text-xs text-white/20 mt-1 text-right">{tierMax - score.sdi_score} pt to next tier</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Validation warnings */}
-            {warnings.length > 0 && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-1.5">
-                    <div className="flex items-center gap-2 mb-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-400" />
-                        <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Data Notices</p>
-                    </div>
-                    {warnings.map((w, i) => <p key={i} className="text-xs text-amber-300/70">{w}</p>)}
-                </div>
-            )}
-
-            {/* Aurion Analysis */}
-            {aurion && (
-                <div className="rounded-2xl border border-[#00F0FF]/10 bg-[#0d1220]/60 p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Brain className="w-4 h-4 text-[#00F0FF]" />
-                            <p className="text-sm font-medium text-[#00F0FF]">Aurion Analysis</p>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            {aurion.validationOk
-                                ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                                : <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                            }
-                            <span className="text-xs text-white/30">Confidence: {aurion.confidence}%</span>
-                        </div>
-                    </div>
-
-                    <p className="text-sm text-white/60 leading-relaxed">{aurion.summary}</p>
-                    {aurion.tier_comment && (
-                        <p className="text-xs text-[#00F0FF]/50 italic">{aurion.tier_comment}</p>
-                    )}
-
-                    {aurion.strengths?.length > 0 && (
-                        <div className="space-y-1.5">
-                            <p className="text-xs uppercase tracking-widest text-emerald-400/60 font-semibold">Strengths</p>
-                            {aurion.strengths.map((s, i) => (
-                                <div key={i} className="flex items-start gap-2">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                                    <p className="text-xs text-white/50">{s}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {aurion.flags?.length > 0 && (
-                        <div className="space-y-1.5">
-                            <p className="text-xs uppercase tracking-widest text-amber-400/60 font-semibold">Areas to improve</p>
-                            {aurion.flags.map((f, i) => (
-                                <div key={i} className="flex items-start gap-2">
-                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" />
-                                    <p className="text-xs text-white/50">{f}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="border-t border-white/5 pt-3 flex items-center gap-1.5">
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#00F0FF]/50" />
-                        <p className="text-xs text-white/25">Score validated by Aurion — Skillion Intelligence Layer</p>
-                    </div>
-                </div>
-            )}
-
-            {/* Key Metrics Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <MetricCard label="Net Profit" value={`${score.net_profit >= 0 ? '+' : ''}${score.net_profit.toFixed(0)}`} good={score.net_profit > 0} />
-                <MetricCard label="Win Rate" value={`${(score.win_rate * 100).toFixed(1)}%`} good={score.win_rate >= 0.5} />
-                <MetricCard label="Profit Factor" value={score.profit_factor.toFixed(2)} good={score.profit_factor >= 1.5} />
-                <MetricCard label="Max Drawdown" value={`${score.max_drawdown_pct.toFixed(1)}%`} good={score.max_drawdown_pct <= 15} />
-                <MetricCard label="Sharpe Ratio" value={score.sharpe_ratio.toFixed(2)} sub="annualized" good={score.sharpe_ratio >= 1} />
-                <MetricCard label="Sortino Ratio" value={score.sortino_ratio.toFixed(2)} sub="downside-adj." good={score.sortino_ratio >= 1} />
-                <MetricCard label="Total Trades" value={score.total_trades.toString()} sub={`${score.trading_days} trading days`} good={null} />
-                <MetricCard label="Z-Score (CV)" value={score.z_score_consistency.toFixed(2)} sub="consistency" good={score.z_score_consistency <= 1.5} />
-                <MetricCard label="Gross Profit" value={`+${score.gross_profit.toFixed(0)}`} good={true} />
-            </div>
-
-            {/* SDI Breakdown */}
-            {breakdown && breakdown.length > 0 && (
-                <div className="rounded-2xl border border-white/5 bg-[#0d1220]/60 p-6 space-y-4">
-                    <p className="text-xs uppercase tracking-widest text-white/30 font-semibold mb-2">Score Breakdown</p>
-                    {breakdown.map(d => <DimensionBar key={d.name} d={d} />)}
-                    <div className="border-t border-white/5 pt-3 flex justify-between text-xs text-white/30">
-                        <span>Total</span>
-                        <span className="font-medium text-white">{breakdown.reduce((a, b) => a + b.contribution, 0)} / 1000</span>
-                    </div>
-                </div>
-            )}
-
-            {/* Re-upload CTA */}
-            <div className="rounded-xl border border-white/5 bg-[#0d1220]/40 p-4 flex items-center justify-between">
+            <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-sm text-white/60">Want to update your score?</p>
-                    <p className="text-xs text-white/30">Upload a new statement from MetaTrader</p>
+                    <h2 className="text-2xl font-light text-white tracking-wide">Reputation Score</h2>
+                    <p className="text-white/40 text-sm mt-1">
+                        {hasData
+                            ? `Period: ${snapshot.period_start} → ${snapshot.period_end}`
+                            : 'No data yet — connect an exchange to compute your score'}
+                    </p>
                 </div>
-                <a href="/dashboard/connect" className="px-4 py-2 rounded-lg bg-[#00F0FF]/10 border border-[#00F0FF]/20 text-[#00F0FF] text-xs font-medium hover:bg-[#00F0FF]/20 transition-colors whitespace-nowrap">
-                    Update →
-                </a>
+                {hasData && (
+                    <form action="/api/aurion/reanalyze" method="POST">
+                        <button
+                            type="submit"
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-white/40 border border-white/10 hover:border-white/20 hover:text-white/70 transition-colors"
+                        >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                            Recompute
+                        </button>
+                    </form>
+                )}
             </div>
+
+            {!hasData ? (
+                /* Empty state */
+                <div className="text-center py-20">
+                    <div className="w-16 h-16 rounded-2xl bg-[#7000FF]/10 border border-[#7000FF]/20 flex items-center justify-center mx-auto mb-4">
+                        <Award className="w-8 h-8 text-[#7000FF]/60" />
+                    </div>
+                    <h3 className="text-xl font-light text-white mb-2">No score computed yet</h3>
+                    <p className="text-white/40 text-sm mb-6 max-w-xs mx-auto">
+                        Connect your exchange, sync your trades, then your SDI score will appear here.
+                    </p>
+                    <Link href="/dashboard/accounts" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 text-[#00F0FF] text-sm font-medium hover:bg-[#00F0FF]/20 transition-colors">
+                        Connect Exchange <ChevronRight className="w-4 h-4" />
+                    </Link>
+                </div>
+            ) : (
+                <>
+                    {/* SDI Gauge + Tier */}
+                    <div className="rounded-2xl border border-white/8 bg-[#0d1220]/60 p-6">
+                        <div className="flex flex-col md:flex-row items-center gap-8">
+                            {/* Ring */}
+                            <div className="relative w-40 h-40 flex-shrink-0">
+                                <ScoreRing score={snapshot.sdi_total} />
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className="text-4xl font-bold text-white">{snapshot.sdi_total}</span>
+                                    <span className="text-xs text-white/40 mt-0.5">/1000</span>
+                                    {totalDelta !== null && (
+                                        <span className={`text-xs font-medium mt-1 ${totalDelta > 0 ? 'text-emerald-400' : totalDelta < 0 ? 'text-rose-400' : 'text-white/30'}`}>
+                                            {totalDelta > 0 ? `+${totalDelta}` : totalDelta < 0 ? `${totalDelta}` : '—'}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Tier info */}
+                            <div className="flex-1 text-center md:text-left">
+                                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${tier.bg} ring-1 ${tier.ring} mb-3`}>
+                                    <Award className={`w-4 h-4 ${tier.color}`} />
+                                    <span className={`text-sm font-semibold ${tier.color}`}>{tier.label}</span>
+                                </div>
+                                <p className="text-white/50 text-sm leading-relaxed max-w-sm">{tier.description}</p>
+                                <div className="flex items-center gap-4 mt-4 text-xs text-white/30">
+                                    <span>Data quality: <span className="text-white/60">{Math.round((snapshot.data_quality_score ?? 0) * 100)}%</span></span>
+                                    <span>Updated: <span className="text-white/60">{new Date(snapshot.computed_at).toLocaleDateString('en-GB')}</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sub-score breakdown */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {SUB_SCORE_CONFIG.map(cfg => {
+                            const value = (snapshot as Record<string, unknown>)[cfg.key] as number ?? 0
+                            const pct = Math.min((value / 250) * 100, 100)
+                            const subFactors = (factors ?? []).filter(f => f.sub_score === cfg.key)
+                            const IconComp = cfg.icon
+
+                            return (
+                                <div key={cfg.key} className="rounded-2xl border border-white/8 bg-[#0d1220]/60 p-4">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className={`w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center`}>
+                                            <IconComp className={`w-4 h-4 ${cfg.color}`} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-white">{cfg.label}</p>
+                                            <p className="text-[10px] text-white/30 truncate">{cfg.desc}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                            <span className="text-xl font-bold text-white">{value}</span>
+                                            <span className="text-xs text-white/30">/250</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Progress bar */}
+                                    <div className="h-1.5 rounded-full bg-white/5 mb-3">
+                                        <div
+                                            className={`h-full rounded-full ${cfg.bar} transition-all`}
+                                            style={{ width: `${pct}%` }}
+                                        />
+                                    </div>
+
+                                    {/* Top factors */}
+                                    {subFactors.slice(0, 3).map(f => (
+                                        <div key={f.factor_name} className="flex items-start gap-2 py-1.5 border-t border-white/5">
+                                            <div className={`mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ${f.direction === 'positive' ? 'bg-emerald-400' :
+                                                    f.direction === 'negative' ? 'bg-rose-400' : 'bg-white/20'
+                                                }`} />
+                                            <p className="text-[11px] text-white/45 leading-snug">{f.explanation}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                    {/* Score path: tier progression */}
+                    <div className="rounded-2xl border border-white/8 bg-[#0d1220]/60 p-4">
+                        <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+                            <Info className="w-4 h-4 text-white/30" />
+                            Tier Progression
+                        </h3>
+                        <div className="flex items-center gap-1">
+                            {(['explorer', 'builder', 'strategist', 'architect', 'elite'] as const).map((t, i) => {
+                                const tc = TIER_CONFIG[t]
+                                const thresholds = [0, 300, 500, 700, 850]
+                                const isActive = snapshot.tier === t
+                                const isPast = snapshot.sdi_total >= thresholds[i]
+                                return (
+                                    <div key={t} className="flex-1 text-center">
+                                        <div className={`h-1 rounded-full mb-2 ${isPast ? (isActive ? `bg-gradient-to-r from-[#7000FF] to-[#00F0FF]` : 'bg-white/30') : 'bg-white/8'}`} />
+                                        <p className={`text-[10px] font-medium ${isActive ? tc.color : isPast ? 'text-white/40' : 'text-white/15'}`}>
+                                            {tc.label}
+                                        </p>
+                                        <p className="text-[9px] text-white/20">{thresholds[i]}+</p>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <Link
+                            href="/dashboard/timeline"
+                            className="flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 bg-white/[0.03] text-sm text-white/60 hover:text-white hover:border-white/20 transition-colors"
+                        >
+                            <TrendingUp className="w-4 h-4" /> Score Timeline
+                        </Link>
+                        <Link
+                            href="/dashboard/insights"
+                            className="flex items-center justify-center gap-2 py-3 rounded-xl border border-[#7000FF]/20 bg-[#7000FF]/5 text-sm text-[#7000FF] hover:bg-[#7000FF]/15 transition-colors"
+                        >
+                            <AlertCircle className="w-4 h-4" /> Ask Aurion
+                        </Link>
+                    </div>
+                </>
+            )}
+
+            <p className="text-[11px] text-white/20 text-center pt-2">
+                SDI score is for informational purposes only. Not financial advice.
+            </p>
         </div>
     )
 }
