@@ -1,21 +1,36 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import LanguageSelector from "./LanguageSelector";
-import { useTranslation } from "../i18n/LanguageContext";
+import { useEffect, useState } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import LanguageSelector from './LanguageSelector'
+import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const { t } = useTranslation();
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { t } = useTranslation()
+  const supabase = createClient()
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user)
+    })
+    return () => subscription.unsubscribe()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const links = [
-    { href: "#system", label: t("navbar.system") },
-    { href: "#aurion", label: t("navbar.aurion") },
-    { href: "#progression", label: t("navbar.progression") },
-    { href: "#roadmap", label: t("navbar.roadmap") },
-    { href: "#security", label: t("navbar.security") },
-  ];
+    { href: '#system', label: t('navbar.system') },
+    { href: '#aurion', label: t('navbar.aurion') },
+    { href: '#progression', label: t('navbar.progression') },
+    { href: '#roadmap', label: t('navbar.roadmap') },
+    { href: '#security', label: t('navbar.security') },
+  ]
+
+  const ctaHref = isLoggedIn ? '/dashboard' : '/auth/login'
+  const ctaLabel = isLoggedIn ? 'Dashboard' : t('navbar.launch_app')
 
   return (
     <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
@@ -97,10 +112,16 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-4">
         <LanguageSelector />
         <a
-          href="/auth/login"
-          className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-all font-sans ring-1 ring-white/10"
+          href={ctaHref}
+          className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-all font-sans ring-1 ${isLoggedIn
+              ? 'bg-gradient-to-r from-[#00F0FF]/15 to-[#7000FF]/15 ring-[#00F0FF]/25 hover:from-[#00F0FF]/25 hover:to-[#7000FF]/25'
+              : 'bg-white/10 ring-white/10 hover:bg-white/20'
+            }`}
         >
-          {t("navbar.launch_app")}
+          {isLoggedIn && (
+            <span className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-[#00F0FF] align-middle" />
+          )}
+          {ctaLabel}
         </a>
       </div>
 
@@ -108,12 +129,12 @@ export default function Navbar() {
       <button
         className="md:hidden flex flex-col items-center justify-center gap-1.5 p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
         onClick={() => setMenuOpen(o => !o)}
-        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
       >
         <span
           className="block h-[1.5px] w-5 bg-white/70 transition-all duration-200"
-          style={{ transform: menuOpen ? "translateY(5px) rotate(45deg)" : undefined }}
+          style={{ transform: menuOpen ? 'translateY(5px) rotate(45deg)' : undefined }}
         />
         <span
           className="block h-[1.5px] w-5 bg-white/70 transition-all duration-200"
@@ -121,7 +142,7 @@ export default function Navbar() {
         />
         <span
           className="block h-[1.5px] w-5 bg-white/70 transition-all duration-200"
-          style={{ transform: menuOpen ? "translateY(-5px) rotate(-45deg)" : undefined }}
+          style={{ transform: menuOpen ? 'translateY(-5px) rotate(-45deg)' : undefined }}
         />
       </button>
 
@@ -139,14 +160,14 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            href="/auth/login"
+            href={ctaHref}
             onClick={() => setMenuOpen(false)}
             className="mt-2 rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 px-4 py-3 text-sm font-semibold text-white text-center hover:opacity-90 transition-opacity"
           >
-            {t("navbar.launch_app")}
+            {ctaLabel}
           </a>
         </div>
       )}
     </header>
-  );
+  )
 }

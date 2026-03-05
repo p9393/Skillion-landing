@@ -163,14 +163,7 @@ body {
   animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Sticky header glass */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-}
+/* NOTE: sticky header applied per-component via className, not globally */
 
 /* ================================
    SKILLION — MOBILE RESPONSIVE

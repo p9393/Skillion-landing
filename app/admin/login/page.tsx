@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginAdmin, bypassLocalAdmin } from "../actions";
+import { loginAdmin } from "../actions";
 
 export default function AdminLogin() {
     const router = useRouter();
@@ -81,27 +81,7 @@ export default function AdminLogin() {
                         {loading ? "Authenticating..." : "Establish Connection"}
                     </button>
 
-                    {process.env.NODE_ENV === "development" && (
-                        <button
-                            type="button"
-                            disabled={loading}
-                            onClick={async () => {
-                                setLoading(true);
-                                setError("");
-                                const res = await bypassLocalAdmin();
-                                if (res?.error) {
-                                    setError(res.error);
-                                    setLoading(false);
-                                } else {
-                                    router.push("/admin");
-                                    router.refresh();
-                                }
-                            }}
-                            className="mt-3 flex w-full items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 py-2 text-xs font-medium text-indigo-300 hover:bg-indigo-500/20 active:bg-indigo-500/30 disabled:opacity-50 transition-colors"
-                        >
-                            [DEV] Override Login (aurion.test)
-                        </button>
-                    )}
+
                 </form>
             </div>
         </div>
