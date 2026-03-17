@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Skillion Finance Privacy Policy. We protect your data and never sell it. Learn how we collect, use, and safeguard your information.",
+  alternates: { canonical: "/privacy" },
+};
 
 const sections = [
     {

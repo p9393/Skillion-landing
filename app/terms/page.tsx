@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Terms of Use",
+  description: "Read the Skillion Finance Terms of Use. Understand your rights and responsibilities when using our reputation-based financial infrastructure platform.",
+  alternates: { canonical: "/terms" },
+};
 
 const sections = [
     {
