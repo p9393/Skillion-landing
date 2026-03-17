@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Skillion — Where Skill Becomes Capital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: #0a0a0a;
+  color: white;
+  overflow-x: hidden;
+}
+
+.hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  position: relative;
+}
+
+.glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  filter: blur(120px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+p {
+  margin-top: 20px;
+  font-size: 1.3rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.buttons {
+  margin-top: 40px;
+}
+
+.btn {
+  padding: 14px 28px;
+  margin: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: white;
+  color: black;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.aurion {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  padding: 15px 20px;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.aurion:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+  <div class="glow"></div>
+
+  <div>
+    <h1>Turn Performance Into Capital.</h1>
+    <p>The future of skill-based finance — measured, scored, amplified.</p>
+
+    <div class="buttons">
+      <a href="#" class="btn btn-primary">Get Early Access</a>
+      <a href="#" class="btn btn-secondary">Talk to Aurion</a>
+    </div>
+  </div>
+</div>
+
+<div class="aurion">
+  Aurion Online
+</div>
+
+</body>
+</html>

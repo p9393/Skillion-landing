@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Skillion Logo V3 — New Concepts</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #030510;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 64px;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      color: white;
+    }
+
+    h1 {
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      color: rgba(255, 255, 255, 0.2);
+      text-transform: uppercase;
+    }
+
+    .row {
+      display: flex;
+      align-items: flex-start;
+      gap: 72px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+    }
+
+    .sublabel {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.18);
+      text-transform: uppercase;
+      margin-top: -8px;
+    }
+
+    .navbar {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 22px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+    }
+
+    .brand-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: white;
+      display: block;
+    }
+
+    .brand-sub {
+      font-size: 8px;
+      letter-spacing: 0.28em;
+      color: rgba(255, 255, 255, 0.35);
+      display: block;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Skillion Finance · SKL · Logo V3</h1>
+
+  <div class="row">
+
+    <!-- ╔══════════════════════════════════════╗
+       ║  CONCEPT 1 — RISING TIERS            ║
+       ║  3 ascending bars = Skill tiers      ║
+       ║  Bronze / Silver / Gold / Elite      ║
+       ╚══════════════════════════════════════╝ -->
+    <div class="card">
+      <svg width="180" height="180" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Bar gradient: bottom = warm indigo, top = electric cyan -->
+          <linearGradient id="bar1" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#6d28d9" />
+            <stop offset="100%" stop-color="#67e8f9" />
+          </linearGradient>
+          <linearGradient id="bar2" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#7c3aed" />
+            <stop offset="100%" stop-color="#22d3ee" />
+          </linearGradient>
+          <linearGradient id="bar3" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#8b5cf6" />
+            <stop offset="100%" stop-color="#00e5ff" />
+          </linearGradient>
+          <linearGradient id="bar4" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#a78bfa" />
+            <stop offset="55%" stop-color="#06b6d4" />
+            <stop offset="100%" stop-color="#ffffff" />
+          </linearGradient>
+          <!-- Hex border gradient -->
+          <linearGradient id="h1B" x1="17" y1="112" x2="103" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#6d28d9" stop-opacity="0.8" />
+            <stop offset="50%" stop-color="#0891b2" />
+            <stop offset="100%" stop-color="#00e5ff" stop-opacity="0.9" />
+          </linearGradient>
+          <radialGradient id="h1G" cx="50%" cy="60%" r="55%">
+            <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.5" />
+            <stop offset="100%" stop-color="#0891b2" stop-opacity="0" />
+          </radialGradient>
+          <filter id="barGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="h1Glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <!-- Ambient -->
+        <circle cx="60" cy="65" r="52" fill="url(#h1G)" />
+        <!-- Hex body -->
+        <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="#07090f" />
+        <!-- Bar 1 (shortest) -->
+        <rect x="26" y="72" width="12" height="20" rx="3" fill="url(#bar1)" filter="url(#barGlow)" />
+        <!-- Bar 2 -->
+        <rect x="43" y="60" width="12" height="32" rx="3" fill="url(#bar2)" filter="url(#barGlow)" />
+        <!-- Bar 3 -->
+        <rect x="60" y="45" width="12" height="47" rx="3" fill="url(#bar3)" filter="url(#barGlow)" />
+        <!-- Bar 4 (tallest — elite) -->
+        <rect x="77" y="30" width="12" height="62" rx="3" fill="url(#bar4)" filter="url(#barGlow)" />
+        <!-- Top glow dots on bars -->
+        <rect x="26" y="72" width="12" height="3" rx="1.5" fill="white" opacity="0.35" />
+        <rect x="43" y="60" width="12" height="3" rx="1.5" fill="white" opacity="0.45" />
+        <rect x="60" y="45" width="12" height="3" rx="1.5" fill="white" opacity="0.55" />
+        <rect x="77" y="30" width="12" height="3" rx="1.5" fill="white" opacity="0.8" />
+        <!-- Hex border -->
+        <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="none" stroke="url(#h1B)"
+          stroke-width="1.6" filter="url(#h1Glow)" />
+        <!-- Corner dots -->
+        <circle cx="60" cy="9" r="2.2" fill="#00e5ff" opacity="0.9" />
+        <circle cx="103.3" cy="33" r="2.2" fill="#7c3aed" opacity="0.8" />
+        <circle cx="103.3" cy="87" r="2.2" fill="#7c3aed" opacity="0.6" />
+        <circle cx="60" cy="111" r="2.2" fill="#6d28d9" opacity="0.9" />
+        <circle cx="16.7" cy="87" r="2.2" fill="#6d28d9" opacity="0.6" />
+        <circle cx="16.7" cy="33" r="2.2" fill="#00e5ff" opacity="0.7" />
+      </svg>
+      <div class="label">A — Rising Tiers</div>
+      <div class="sublabel">Skill progression · 4 levels</div>
+      <div class="navbar">
+        <svg width="30" height="30" viewBox="0 0 120 120" fill="none">
+          <defs>
+            <linearGradient id="nb1" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#6d28d9" />
+              <stop offset="100%" stop-color="#00e5ff" />
+            </linearGradient>
+            <linearGradient id="nhB1" x1="17" y1="112" x2="103" y2="8" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6d28d9" />
+              <stop offset="100%" stop-color="#00e5ff" />
+            </linearGradient>
+            <filter id="nbf1">
+              <feGaussianBlur stdDeviation="2.5" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="#07090f" />
+          <rect x="26" y="72" width="12" height="20" rx="3" fill="url(#nb1)" filter="url(#nbf1)" />
+          <rect x="43" y="60" width="12" height="32" rx="3" fill="url(#nb1)" filter="url(#nbf1)" />
+          <rect x="60" y="45" width="12" height="47" rx="3" fill="url(#nb1)" filter="url(#nbf1)" />
+          <rect x="77" y="30" width="12" height="62" rx="3" fill="url(#nb1)" filter="url(#nbf1)" />
+          <rect x="77" y="30" width="12" height="3" rx="1.5" fill="white" opacity="0.7" />
+          <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="none" stroke="url(#nhB1)"
+            stroke-width="2" />
+        </svg>
+        <div><span class="brand-name">SKILLION</span><span class="brand-sub">FINANCE</span></div>
+      </div>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗
+       ║  CONCEPT 2 — SCORE DIAMOND           ║
+       ║  A precise diamond with inner lines  ║
+       ║  Think Ethereum meets Bloomberg      ║
+       ╚══════════════════════════════════════╝ -->
+    <div class="card">
+      <svg width="180" height="180" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="d1" x1="30" y1="90" x2="90" y2="30" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#c026d3" />
+            <stop offset="45%" stop-color="#7c3aed" />
+            <stop offset="100%" stop-color="#06b6d4" />
+          </linearGradient>
+          <linearGradient id="d1top" x1="40" y1="35" x2="80" y2="60" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="white" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="white" stop-opacity="0" />
+          </linearGradient>
+          <linearGradient id="h2B" x1="17" y1="112" x2="103" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#c026d3" stop-opacity="0.8" />
+            <stop offset="50%" stop-color="#7c3aed" />
+            <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.9" />
+          </linearGradient>
+          <radialGradient id="h2G" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.55" />
+            <stop offset="100%" stop-color="#06b6d4" stop-opacity="0" />
+          </radialGradient>
+          <filter id="diamGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="h2Glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <circle cx="60" cy="60" r="56" fill="url(#h2G)" />
+        <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="#07090f" />
+        <!-- Main outer diamond -->
+        <path d="M60 28 L84 60 L60 86 L36 60 Z" fill="url(#d1)" filter="url(#diamGlow)" />
+        <!-- Inner hollow (cutout) for depth -->
+        <path d="M60 38 L76 60 L60 76 L44 60 Z" fill="#07090f" />
+        <!-- Inner diamond ring -->
+        <path d="M60 42 L73 60 L60 72 L47 60 Z" fill="none" stroke="url(#d1)" stroke-width="1.5" opacity="0.7" />
+        <!-- Center dot -->
+        <circle cx="60" cy="60" r="4" fill="url(#d1)" filter="url(#diamGlow)" />
+        <!-- Top face sheen (3D) -->
+        <path d="M60 28 L84 60 L60 56 Z" fill="url(#d1top)" />
+        <!-- Hex border -->
+        <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="none" stroke="url(#h2B)"
+          stroke-width="1.6" filter="url(#h2Glow)" />
+        <!-- Corner dots -->
+        <circle cx="60" cy="9" r="2.2" fill="#06b6d4" opacity="0.9" />
+        <circle cx="103.3" cy="33" r="2.2" fill="#7c3aed" opacity="0.8" />
+        <circle cx="103.3" cy="87" r="2.2" fill="#7c3aed" opacity="0.65" />
+        <circle cx="60" cy="111" r="2.2" fill="#c026d3" opacity="0.9" />
+        <circle cx="16.7" cy="87" r="2.2" fill="#c026d3" opacity="0.65" />
+        <circle cx="16.7" cy="33" r="2.2" fill="#06b6d4" opacity="0.75" />
+      </svg>
+      <div class="label">B — Score Diamond</div>
+      <div class="sublabel">Precision · Depth · Unique</div>
+      <div class="navbar">
+        <svg width="30" height="30" viewBox="0 0 120 120" fill="none">
+          <defs>
+            <linearGradient id="nd1" x1="30" y1="90" x2="90" y2="30" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#c026d3" />
+              <stop offset="50%" stop-color="#7c3aed" />
+              <stop offset="100%" stop-color="#06b6d4" />
+            </linearGradient>
+            <linearGradient id="nhB2" x1="17" y1="112" x2="103" y2="8" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#c026d3" />
+              <stop offset="100%" stop-color="#06b6d4" />
+            </linearGradient>
+            <filter id="ndg">
+              <feGaussianBlur stdDeviation="3" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="#07090f" />
+          <path d="M60 28 L84 60 L60 86 L36 60 Z" fill="url(#nd1)" filter="url(#ndg)" />
+          <path d="M60 38 L76 60 L60 76 L44 60 Z" fill="#07090f" />
+          <path d="M60 42 L73 60 L60 72 L47 60 Z" fill="none" stroke="url(#nd1)" stroke-width="1.5" opacity="0.7" />
+          <circle cx="60" cy="60" r="4" fill="url(#nd1)" filter="url(#ndg)" />
+          <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="none" stroke="url(#nhB2)"
+            stroke-width="2" />
+        </svg>
+        <div><span class="brand-name">SKILLION</span><span class="brand-sub">FINANCE</span></div>
+      </div>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗
+       ║  CONCEPT 3 — ANGULAR LIGHTNING       ║
+       ║  Breakout momentum. One bold stroke. ║
+       ╚══════════════════════════════════════╝ -->
+    <div class="card">
+      <svg width="180" height="180" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="l1" x1="45" y1="88" x2="75" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#d946ef" />
+            <stop offset="45%" stop-color="#818cf8" />
+            <stop offset="100%" stop-color="#00e5ff" />
+          </linearGradient>
+          <linearGradient id="h3B" x1="17" y1="112" x2="103" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#d946ef" stop-opacity="0.85" />
+            <stop offset="50%" stop-color="#818cf8" />
+            <stop offset="100%" stop-color="#00e5ff" stop-opacity="0.9" />
+          </linearGradient>
+          <radialGradient id="h3G" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#818cf8" stop-opacity="0.5" />
+            <stop offset="60%" stop-color="#d946ef" stop-opacity="0.15" />
+            <stop offset="100%" stop-color="#00e5ff" stop-opacity="0" />
+          </radialGradient>
+          <filter id="lightGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4.5" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="h3Glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <circle cx="60" cy="60" r="56" fill="url(#h3G)" />
+        <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="#07090f" />
+        <!-- Lightning bolt / breakout arrow (filled polygon) -->
+        <!-- Upper right arm of arrow -->
+        <path d="M72 27 L75 27 L75 58 L88 45 L90 47 L75 64 L75 93 L72 93 L72 64 L58 64 L58 58 L72 58 Z" fill="url(#l1)"
+          filter="url(#lightGlow)" />
+        <!-- Simpler clean arrow pointing up-right (signal breakout) -->
+        <!-- Actually let me do a clean upward chevron stack -->
+        <!-- 3 stacked chevrons pointing up (ascending, decreasing opacity) -->
+        <path d="M38 78 L60 55 L82 78" stroke="url(#l1)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+          fill="none" filter="url(#lightGlow)" opacity="0.5" />
+        <path d="M38 64 L60 41 L82 64" stroke="url(#l1)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+          fill="none" filter="url(#lightGlow)" opacity="0.75" />
+        <path d="M38 50 L60 27 L82 50" stroke="url(#l1)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+          fill="none" filter="url(#lightGlow)" />
+        <!-- Clear the complex arrow above -->
+        <path d="M72 27 L75 27 L75 58 L88 45 L90 47 L75 64 L75 93 L72 93 L72 64 L58 64 L58 58 L72 58 Z" fill="none" />
+        <!-- Hex border -->
+        <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="none" stroke="url(#h3B)"
+          stroke-width="1.6" filter="url(#h3Glow)" />
+        <!-- Corner dots -->
+        <circle cx="60" cy="9" r="2.2" fill="#00e5ff" opacity="0.9" />
+        <circle cx="103.3" cy="33" r="2.2" fill="#818cf8" opacity="0.85" />
+        <circle cx="103.3" cy="87" r="2.2" fill="#818cf8" opacity="0.65" />
+        <circle cx="60" cy="111" r="2.2" fill="#d946ef" opacity="0.9" />
+        <circle cx="16.7" cy="87" r="2.2" fill="#d946ef" opacity="0.65" />
+        <circle cx="16.7" cy="33" r="2.2" fill="#00e5ff" opacity="0.75" />
+      </svg>
+      <div class="label">C — Ascending Chevrons</div>
+      <div class="sublabel">Momentum · Breakout · Elite</div>
+      <div class="navbar">
+        <svg width="30" height="30" viewBox="0 0 120 120" fill="none">
+          <defs>
+            <linearGradient id="nl1" x1="45" y1="88" x2="75" y2="28" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#d946ef" />
+              <stop offset="45%" stop-color="#818cf8" />
+              <stop offset="100%" stop-color="#00e5ff" />
+            </linearGradient>
+            <linearGradient id="nhB3" x1="17" y1="112" x2="103" y2="8" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#d946ef" />
+              <stop offset="100%" stop-color="#00e5ff" />
+            </linearGradient>
+            <filter id="nlg">
+              <feGaussianBlur stdDeviation="3.5" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="#07090f" />
+          <path d="M38 78 L60 55 L82 78" stroke="url(#nl1)" stroke-width="7" stroke-linecap="round"
+            stroke-linejoin="round" fill="none" filter="url(#nlg)" opacity="0.5" />
+          <path d="M38 64 L60 41 L82 64" stroke="url(#nl1)" stroke-width="7" stroke-linecap="round"
+            stroke-linejoin="round" fill="none" filter="url(#nlg)" opacity="0.75" />
+          <path d="M38 50 L60 27 L82 50" stroke="url(#nl1)" stroke-width="7" stroke-linecap="round"
+            stroke-linejoin="round" fill="none" filter="url(#nlg)" />
+          <path d="M60 9 L103.3 33 L103.3 87 L60 111 L16.7 87 L16.7 33 Z" fill="none" stroke="url(#nhB3)"
+            stroke-width="2" />
+        </svg>
+        <div><span class="brand-name">SKILLION</span><span class="brand-sub">FINANCE</span></div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+
+</html>
