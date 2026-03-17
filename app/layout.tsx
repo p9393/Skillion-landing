@@ -28,6 +28,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  verification: {
+    google: "KZ4SszvrNgxVXe0_0_m7v2w7m1Wl1_M9VfO4R6v_o",
+  },
   title: {
     default: "Skillion Finance — Where Skill Becomes Capital",
     template: "%s | Skillion Finance",
