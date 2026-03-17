@@ -6,6 +6,8 @@ import QuantumField from "./components/QuantumField";
 import CustomCursor from "./components/CustomCursor";
 import ScrollProgress from "./components/ScrollProgress";
 import Preloader from "./components/Preloader";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -88,6 +90,10 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
         </LanguageProvider>
+
+        {/* Vercel Analytics & Speed Insights */}
+                <Analytics />
+                <SpeedInsights />
       </body>
     </html>
   );
