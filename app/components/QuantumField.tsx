@@ -81,6 +81,7 @@ export default function QuantumField() {
         let animId = 0;
         let nodes: Node3D[] = [];
         let pulses: Pulse[] = [];
+        const pendingTimers: ReturnType<typeof setTimeout>[] = [];
 
         // Camera rotation state
         let rotY = 0;          // auto-rotation angle (Y axis)
@@ -230,7 +231,7 @@ export default function QuantumField() {
                 const dx = n.wx - epi.wx, dy = n.wy - epi.wy, dz = n.wz - epi.wz;
                 const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
                 if (dist < MAX_DIST3D * 2.2) {
-                    setTimeout(() => {
+                    const tid = setTimeout(() => {
                         n.cascading = Math.max(n.cascading, 1 - dist / (MAX_DIST3D * 2.2));
                         pulses.push({
                             fromIdx: epicIdx, toIdx: ni,
@@ -238,6 +239,7 @@ export default function QuantumField() {
                             color: TIER_RGB[epi.tier], alpha: 0.95,
                         });
                     }, dist * 1.8);
+                    pendingTimers.push(tid);
                 }
             });
         }
@@ -362,6 +364,7 @@ export default function QuantumField() {
 
         return () => {
             cancelAnimationFrame(animId);
+            pendingTimers.forEach(clearTimeout);
             window.removeEventListener("mousemove", onMove);
             window.removeEventListener("mouseleave", onLeave);
             window.removeEventListener("resize", onResize);
