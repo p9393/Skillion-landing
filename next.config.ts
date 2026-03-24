@@ -53,8 +53,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Aggressive cache for static assets (1 year, immutable)
-        source: "/(.*)\\.(?:ico|png|svg|jpg|jpeg|webp|avif|woff2|woff|ttf)$",
+        // Aggressive cache for image assets (1 year, immutable)
+        source: "/:path*.(ico|png|svg|jpg|jpeg|webp|avif)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
+        // Aggressive cache for font assets (1 year, immutable)
+        source: "/:path*.(woff2|woff|ttf)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
