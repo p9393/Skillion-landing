@@ -1,11 +1,18 @@
 node_modules/
 __pycache__/
+.ruff_cache/
 .worktrees/
+.tmp/
+.DS_Store
 
-walkthrough.md
+# npm pack artifacts
+antigravity-awesome-skills-*.tgz
+
 .agent/rules/
+.claude-plugin/
+.codex/
 .gemini/
-LOCAL_CONFIG.md
+.release-clone-*/
 data/node_modules
 
 # Temporary analysis and report files
@@ -21,11 +28,18 @@ similar_skills_*.json
 remaining_*.json
 html_*.json
 
-# Temporary analysis scripts
-scripts/*voltagent*.py
-scripts/*html*.py
-scripts/*similar*.py
-scripts/*count*.py
+# Temporary analysis scripts (tools/scripts/)
+tools/scripts/*voltagent*.py
+tools/scripts/*html*.py
+tools/scripts/*similar*.py
+tools/scripts/*count*.py
 
 # Optional baseline for legacy JS validator (scripts/validate-skills.js)
 validation-baseline.json
+
+# Web app generated assets (from npm run app:setup)
+apps/web-app/public/skills/
+apps/web-app/public/skills.json
+
+# Local duplicate/download artifacts
+skills/spline-3d-integration/*.zip

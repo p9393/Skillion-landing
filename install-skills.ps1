@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Continue"
-$root = "C:\Users\RCG\Desktop\skillion-next"
+$root = "C:\Users\gold7\.gemini\antigravity\scratch\skillion-landing"
 $zip = Join-Path $root "skills-temp.zip"
 $dest = Join-Path $root ".agent\skills"
 $agentDir = Join-Path $root ".agent"

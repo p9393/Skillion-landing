@@ -4,18 +4,20 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
-import { LayoutDashboard, Link as LinkIcon, Star, Settings, LogOut, ChevronRight, Menu, X, BarChart2, Wallet, Activity, Lightbulb } from 'lucide-react'
+import { LayoutDashboard, Link as LinkIcon, Star, Settings, LogOut, ChevronRight, Menu, X, BarChart2, Wallet, Activity, Lightbulb, Award } from 'lucide-react'
 
 const navItems = [
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Connected Accounts', href: '/dashboard/accounts', icon: Wallet },
-    { label: 'Connect MT4/MT5', href: '/dashboard/connect', icon: LinkIcon },
+    { label: 'Connect Data', href: '/dashboard/connect', icon: LinkIcon },
     { label: 'Trade History', href: '/dashboard/trades', icon: BarChart2 },
     { label: 'Reputation Score', href: '/dashboard/score', icon: Star },
+    { label: 'Certifications', href: '/dashboard/certifications', icon: Award },
     { label: 'Score Timeline', href: '/dashboard/timeline', icon: Activity },
     { label: 'Insights', href: '/dashboard/insights', icon: Lightbulb },
     { label: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
+
 
 // NavContent extracted as a top-level component to avoid "component defined during render" lint error
 function NavContent({
