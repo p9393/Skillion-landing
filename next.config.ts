@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
           // Force HTTPS for 2 years (HSTS preload-ready)
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
-          // Content-Security-Policy — calibrated for Next.js + Vercel + Supabase + OpenAI
+          // Content-Security-Policy — calibrated for Next.js + Vercel + Supabase + OpenAI + Social links
           {
             key: "Content-Security-Policy",
             value: [
@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https:",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.resend.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.resend.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://discord.com https://t.me",
               "media-src 'self' blob:",
               "worker-src 'self' blob:",
               "frame-src 'none'",

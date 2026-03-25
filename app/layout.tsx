@@ -36,21 +36,25 @@ export const metadata: Metadata = {
     template: "%s | Skillion Finance",
   },
   description:
-    "A Reputation-Based Financial Infrastructure where verified trading skill becomes a measurable, portable financial asset. Build your SDI score and unlock access, tools, and capital.",
+    "Build your SDI Score: the non-custodial reputation layer for serious traders. Verified skill becomes portable capital. Merit over hype — join the waitlist now.",
   keywords: [
-    "trading reputation system",
-    "trader score",
     "SDI score",
+    "trading reputation system",
+    "non-custodial trading score",
+    "reputation finance",
     "skill-based finance",
-    "financial infrastructure",
+    "trader score DeFi",
     "verified trading performance",
     "prop firm alternative",
-    "merit-based capital",
-    "trader reputation",
+    "merit-based capital access",
+    "trader reputation infrastructure",
+    "financial reputation layer",
     "Skillion Finance",
+    "reputation-based financial infrastructure",
   ],
   authors: [{ name: "Skillion Finance", url: "https://www.skillion.finance" }],
   creator: "Skillion Finance",
+  publisher: "Skillion Finance",
   category: "Finance",
   metadataBase: new URL("https://www.skillion.finance"),
   alternates: {
@@ -75,9 +79,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@SkillionFi",
     title: "Skillion Finance — Where Skill Becomes Capital",
     description:
-      "A Reputation-Based Financial Infrastructure. Merit over capital. Skill over hype.",
+      "Build your SDI Score. Non-custodial reputation layer for serious traders. Merit over capital. Skill over hype.",
     images: ["/og-image.png"],
     creator: "@SkillionFi",
   },
@@ -89,11 +94,12 @@ export const metadata: Metadata = {
       follow: true,
       "max-image-preview": "large",
       "max-snippet": -1,
+      "max-video-preview": -1,
     },
   },
 };
 
-// JSON-LD structured data — Organization + WebSite schema
+// JSON-LD structured data — Organization + WebSite + SoftwareApplication schema
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -105,11 +111,22 @@ const jsonLd = {
       logo: {
         "@type": "ImageObject",
         url: "https://www.skillion.finance/skillion-logo.svg",
+        width: 512,
+        height: 512,
       },
       description:
-        "A Reputation-Based Financial Infrastructure where verified trading skill becomes a measurable, portable financial asset.",
+        "A non-custodial Reputation-Based Financial Infrastructure where verified trading skill becomes a measurable, portable financial asset. Build your SDI Score and unlock access, tools, and capital.",
       foundingDate: "2025",
-      sameAs: [],
+      contactPoint: {
+        "@type": "ContactPoint",
+        email: "info@skillion.finance",
+        contactType: "customer support",
+      },
+      sameAs: [
+        "https://discord.com/channels/1485968255037214890/1485968255804899422",
+        "https://t.me/Skillion_Finance",
+        "https://www.instagram.com/p9393195/",
+      ],
     },
     {
       "@type": "WebSite",
@@ -121,6 +138,21 @@ const jsonLd = {
         "@type": "SearchAction",
         target: "https://www.skillion.finance/?q={search_term_string}",
         "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://www.skillion.finance/#app",
+      name: "Skillion Finance",
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Web",
+      url: "https://www.skillion.finance",
+      description: "Non-custodial trading reputation infrastructure. Build your SDI Score and unlock merit-based capital access.",
+      publisher: { "@id": "https://www.skillion.finance/#organization" },
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
       },
     },
   ],
